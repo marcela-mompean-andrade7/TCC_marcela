@@ -17,12 +17,13 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
 <body>
     <!-- NAVIGATION BAR -->
     <nav class="navbar">
-        <a href="index.php" class="logo">
-            <b>🌙 Lunaris</b>
+        <a href="index.php" class="logo" aria-label="Lunaris Academy">
+            <img src="logo.png" alt="Logo Lunaris">
+            <b>Lunaris</b>
         </a>
         <div class="nav-links">
             <a href="login.php">Login</a>
-            <a href="cadastro.php" class="btn">✨ Criar Conta</a>
+            <a href="cadastro.php" class="btn">Criar Conta</a>
         </div>
     </nav>
 

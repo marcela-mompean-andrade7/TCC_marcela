@@ -4,7 +4,14 @@ login_required();
 $q = $pdo->prepare('SELECT * FROM users WHERE id=?');
 $q->execute([$_SESSION['user_id']]);
 $u = $q->fetch();
-$acts = $pdo->query("SELECT a.*,u.name professor FROM activities a JOIN users u ON u.id=a.professor_id ORDER BY a.created_at DESC LIMIT 12")->fetchAll();
+$acts = [];
+if ($u['role'] === 'aluno') {
+    $q = $pdo->prepare("SELECT a.*, u.name professor, s.id as submission_id, s.score, s.total, s.submitted_at FROM activities a JOIN users u ON u.id=a.professor_id LEFT JOIN submissions s ON s.activity_id=a.id AND s.student_id=? ORDER BY a.created_at DESC LIMIT 12");
+    $q->execute([$u['id']]);
+    $acts = $q->fetchAll();
+} else {
+    $acts = $pdo->query("SELECT a.*,u.name professor FROM activities a JOIN users u ON u.id=a.professor_id ORDER BY a.created_at DESC LIMIT 12")->fetchAll();
+}
 $res = [];
 $totalPoints = (int)$u['points'];
 if ($u['role'] === 'aluno') {
@@ -56,11 +63,36 @@ if ($u['role'] === 'aluno') {
                 </a>
             </div>
             <h2>📚 Tarefas</h2>
-            <div class="activity-list"><?php foreach ($acts as $a): ?><article class="card"><span class="tag"><?= e($a['difficulty']) ?></span>
+            <div class="activity-list"><?php foreach ($acts as $a): ?>
+                    <?php
+                    $statusClass = 'status-red';
+                    $statusLabel = 'Não começou';
+                    if (!empty($a['submission_id'])) {
+                        $score = (int)($a['score'] ?? 0);
+                        $total = max(1, (int)($a['total'] ?? 0));
+                        $percent = ($score / $total) * 100;
+                        if ($percent >= 100) {
+                            $statusClass = 'status-green';
+                            $statusLabel = 'Concluído';
+                        } else {
+                            $statusClass = 'status-orange';
+                            $statusLabel = 'Em andamento';
+                        }
+                    }
+                    ?>
+                    <article class="card task-card">
+                        <div class="task-head">
+                            <span class="tag"><?= e($a['difficulty']) ?></span>
+                            <span class="status-badge <?= $statusClass ?>">
+                                <span class="status-dot"></span>
+                                <?= $statusLabel ?>
+                            </span>
+                        </div>
                         <h3><?= e($a['title']) ?></h3>
                         <p><?= nl2br(e($a['description'])) ?></p><small>Professor: <?= e($a['professor']) ?><?php if ($a['due_date']): ?> • Entrega: <?= e($a['due_date']) ?><?php endif; ?></small>
                         <div class="actions"><a class="btn" href="atividade.php?id=<?= $a['id'] ?>">Abrir tarefa</a></div>
-                    </article><?php endforeach;
+                    </article>
+                <?php endforeach;
                                         if (!$acts): ?><div class="card">Nenhuma tarefa publicada.</div><?php endif; ?></div>
             <h2>📈 Histórico</h2>
             <div class="card table-wrap">
