@@ -31,7 +31,7 @@ if ($u['role'] === 'aluno') {
 </head>
 
 <body>
-    <header class="nav"><b>🎮 MathPlay</b>
+    <header class="nav"><b>MathUp</b>
         <nav><span><?= e($u['name']) ?></span><?php if ($u['role'] === 'professor'): ?><a href="professor/">Professor</a><?php endif; ?><a href="perfil.php">Perfil</a><a href="logout.php">Sair</a></nav>
     </header>
     <main class="container">

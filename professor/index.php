@@ -30,14 +30,14 @@ $acts = $q->fetchAll();
 </head>
 
 <body>
-    <header class="nav"><b>🎮 MathPlay • Professor</b>
+    <header class="nav"><b>MathUp • Professor</b>
         <nav><a href="../dashboard.php">Painel</a><a href="criar.php">Nova atividade</a><a href="../logout.php">Sair</a></nav>
     </header>
     <main class="container teacher-panel">
         <div class="teacher-header">
             <div>
                 <span class="tag">Professor</span>
-                <h1>👩‍🏫 Minhas atividades</h1>
+                <h1>Minhas atividades</h1>
             </div>
             <a class="btn" href="criar.php">+ Criar atividade</a>
         </div>

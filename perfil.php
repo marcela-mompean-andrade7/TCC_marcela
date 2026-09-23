@@ -102,7 +102,7 @@ $avatar = !empty($u['profile_photo']) ? $u['profile_photo'] : null;
 </head>
 
 <body>
-    <header class="nav"><b>🎮 MathPlay</b>
+    <header class="nav"><b>MathUp</b>
         <nav><a href="dashboard.php">Painel</a><a href="logout.php">Sair</a></nav>
     </header>
 

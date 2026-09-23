@@ -52,7 +52,7 @@ function q(string $game, int $l): array
 </head>
 
 <body>
-    <header class="nav"><b>🎮 MathPlay</b>
+    <header class="nav"><b>MathUp</b>
         <nav><a href="dashboard.php">Painel</a></nav>
     </header>
     <main class="container narrow">

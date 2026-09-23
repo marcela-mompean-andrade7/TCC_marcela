@@ -41,7 +41,7 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
             </p>
 
             <div class="actions">
-                <a href="cadastro.php" class="btn">✨ Começar Agora</a>
+                <a href="cadastro.php" class="btn">Começar Agora</a>
                 <a href="#sobre" class="btn btn-secondary">Conhecer Mais</a>
             </div>
         </div>
@@ -134,7 +134,7 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 Lunaris Academy. Todos os direitos reservados.</p>
-            <p>Aprenda. Jogue. Evolua. 🌙</p>
+            <p>Aprenda. Jogue. Evolua.</p>
         </div>
     </footer>
 </body>

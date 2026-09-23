@@ -28,7 +28,7 @@ $done = $q->fetch();
 
 <body>
     <header class="nav">
-        <b>🎮 MathPlay</b>
+        <b>MathUp</b>
         <nav><a href="dashboard.php">Painel</a></nav>
     </header>
     <main class="container narrow">

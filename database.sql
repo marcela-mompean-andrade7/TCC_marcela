@@ -1,11 +1,12 @@
-CREATE DATABASE IF NOT EXISTS mathplay CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE mathplay;
+CREATE DATABASE IF NOT EXISTS mathup CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE mathup;
 
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  name VARCHAR(120) NOT NULL,
  email VARCHAR(180) NOT NULL UNIQUE,
  password_hash VARCHAR(255) NOT NULL,
+ profile_photo VARCHAR(255) NULL,
  role ENUM('aluno','professor') NOT NULL,
  serie ENUM('6º ano','7º ano','8º ano','9º ano') NULL,
  regiao ENUM('Norte','Nordeste','Centro-Oeste','Sudeste','Sul') NOT NULL,
@@ -14,7 +15,7 @@ CREATE TABLE users(
  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE activities(
+CREATE TABLE IF NOT EXISTS activities(
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  professor_id INT UNSIGNED NOT NULL,
  title VARCHAR(160) NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE activities(
  FOREIGN KEY(professor_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE questions(
+CREATE TABLE IF NOT EXISTS questions(
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  activity_id INT UNSIGNED NOT NULL,
  question_text TEXT NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE questions(
  FOREIGN KEY(activity_id) REFERENCES activities(id) ON DELETE CASCADE
 );
 
-CREATE TABLE submissions(
+CREATE TABLE IF NOT EXISTS submissions(
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  activity_id INT UNSIGNED NOT NULL,
  student_id INT UNSIGNED NOT NULL,
@@ -45,7 +46,7 @@ CREATE TABLE submissions(
  FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE game_results(
+CREATE TABLE IF NOT EXISTS game_results(
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  student_id INT UNSIGNED NOT NULL,
  game VARCHAR(60) NOT NULL,
@@ -56,3 +57,5 @@ CREATE TABLE game_results(
  played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
  FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo VARCHAR(255) NULL AFTER password_hash;

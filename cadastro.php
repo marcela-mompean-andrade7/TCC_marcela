@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <main class="auth card"><a href="index.php">← Início</a>
     <h1>Criar conta</h1>
-    <p>Preencha seus dados para entrar no MathPlay.</p>
+    <p>Preencha seus dados para entrar no MathUp.</p>
     <?php foreach ($errors as $x): ?><div class="alert"><?= e($x) ?></div><?php endforeach; ?>
     <form method="post"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
       <label>Nome<input name="name" required maxlength="120" value="<?= e($_POST['name'] ?? '') ?>"></label>

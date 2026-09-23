@@ -15,7 +15,7 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false
     ]);
 } catch (PDOException $e) {
-    exit('Erro ao conectar ao banco. Confira o XAMPP e o banco mathplay.');
+    exit('Erro ao conectar ao banco. Confira o XAMPP e o banco mathup.');
 }
 
 function e(?string $v): string
