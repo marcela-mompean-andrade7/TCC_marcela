@@ -138,6 +138,5 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
         </div>
     </footer>
 </body>
-</body>
 
 </html>
