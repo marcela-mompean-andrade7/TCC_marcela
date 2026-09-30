@@ -29,37 +29,52 @@ $done = $q->fetch();
 <body>
     <header class="nav">
         <b>MathUp</b>
-        <nav><a href="dashboard.php">Painel</a></nav>
+        <nav>
+            <a href="dashboard.php">Painel</a>
+            <a href="logout.php">Sair</a>
+        </nav>
     </header>
-    <main class="container narrow">
-        <div class="card">
-            <span class="tag">
-                <?= e($a['difficulty']) ?>
-            </span>
-            <h1><?= e($a['title']) ?></h1>
-            <p><?= nl2br(e($a['description'])) ?></p>
-            <small>Professor: <?= e($a['professor']) ?></small>
-        </div>
+
+    <main class="container narrow activity-page">
+        <section class="activity-header card">
+            <div class="activity-meta">
+                <span class="tag"><?= e($a['difficulty']) ?></span>
+            </div>
+
+            <div class="activity-info">
+                <h1><?= e($a['title']) ?></h1>
+                <p><?= nl2br(e($a['description'])) ?></p>
+            </div>
+
+            <div class="activity-instructor">Professor: <?= e($a['professor']) ?></div>
+        </section>
+
         <?php if ($done): ?>
-            <div class="success">Você já respondeu esta atividade. Nota: <b>
-                    <?= e((string)$done['score']) ?>/
-                    <?= e((string)$done['total']) ?>
-                </b>
-                .</div><?php elseif (!$questions): ?>
-            <div class="card">O professor ainda não adicionou questões.</div>
+            <div class="activity-success">Você já respondeu esta atividade. Nota: <b>
+                    <?= e((string)$done['score']) ?>/<?= e((string)$done['total']) ?>
+                </b>.</div>
+        <?php elseif (!$questions): ?>
+            <div class="activity-empty">O professor ainda não adicionou questões.</div>
         <?php else: ?>
-            <form method="post" action="responder.php">
+            <form class="activity-form" method="post" action="responder.php">
                 <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
                 <input type="hidden" name="activity_id" value="<?= $id ?>">
+
                 <?php foreach ($questions as $i => $x): ?>
-                    <div class="card">
-                        <h3><?= ($i + 1) ?>.
-                            <?= e($x['question_text']) ?>
-                        </h3>
-                        <input name="answers[<?= $x['id'] ?>]" required>
+                    <div class="question-card card">
+                        <div class="question-head">
+                            <span class="question-number"><?= ($i + 1) ?></span>
+                            <h3><?= e($x['question_text']) ?></h3>
+                        </div>
+
+                        <label class="answer-field">
+                            <span>Sua resposta</span>
+                            <input class="answer-input" type="text" name="answers[<?= $x['id'] ?>]" required>
+                        </label>
                     </div>
                 <?php endforeach; ?>
-                <button class="btn full">Enviar atividade</button>
+
+                <button class="btn activity-submit" type="submit">Enviar atividade</button>
             </form>
         <?php endif; ?>
     </main>
