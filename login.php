@@ -13,6 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['user_id'] = $u['id'];
     $_SESSION['role'] = $u['role'];
     $_SESSION['name'] = $u['name'];
+
+    if (($u['role'] ?? '') === 'aluno') {
+      ensure_student_starter_planet($pdo, (int)$u['id']);
+    }
+
     redirect('dashboard.php');
   } else $error = 'E-mail ou senha incorretos.';
 }

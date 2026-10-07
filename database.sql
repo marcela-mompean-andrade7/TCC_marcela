@@ -71,3 +71,50 @@ CREATE TABLE IF NOT EXISTS game_results(
 );
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo VARCHAR(255) NULL AFTER password_hash;
+
+CREATE TABLE IF NOT EXISTS planets(
+ id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(80) NOT NULL,
+ slug VARCHAR(80) NOT NULL UNIQUE,
+ description TEXT NOT NULL,
+ icon VARCHAR(20) NOT NULL,
+ price INT NOT NULL DEFAULT 0,
+ display_order INT NOT NULL DEFAULT 0,
+ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS student_planets(
+ id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ student_id INT UNSIGNED NOT NULL,
+ planet_id INT UNSIGNED NOT NULL,
+ purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE KEY unique_student_planet(student_id, planet_id),
+ FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE,
+ FOREIGN KEY(planet_id) REFERENCES planets(id) ON DELETE CASCADE
+);
+
+INSERT INTO planets(name, slug, description, icon, price, display_order)
+VALUES
+ ('Terra', 'terra', 'Seu planeta de origem', '🌍', 0, 1),
+ ('Marte', 'marte', 'Planeta da coragem e dos desafios', '🔴', 500, 2),
+ ('Júpiter', 'jupiter', 'Planeta dos grandes desafios', '🟡', 1000, 3),
+ ('Saturno', 'saturno', 'Planeta da persistência', '🪐', 1500, 4),
+ ('Netuno', 'netuno', 'Planeta dos grandes exploradores', '🔵', 2000, 5),
+ ('Urano', 'urano', 'Planeta dos desafios avançados', '🟣', 2500, 6),
+ ('Sol', 'sol', 'Símbolo máximo da jornada', '☀️', 5000, 7)
+ON DUPLICATE KEY UPDATE
+ name = VALUES(name),
+ description = VALUES(description),
+ icon = VALUES(icon),
+ price = VALUES(price),
+ display_order = VALUES(display_order);
+
+INSERT INTO student_planets(student_id, planet_id)
+SELECT u.id, p.id
+FROM users u
+JOIN planets p ON p.slug = 'terra'
+WHERE u.role = 'aluno'
+AND NOT EXISTS (
+    SELECT 1 FROM student_planets sp WHERE sp.student_id = u.id AND sp.planet_id = p.id
+);
+

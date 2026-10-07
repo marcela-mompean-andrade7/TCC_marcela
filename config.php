@@ -32,6 +32,70 @@ $pdo->exec(
     )'
 );
 
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS planets(
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(80) NOT NULL,
+        slug VARCHAR(80) NOT NULL UNIQUE,
+        description TEXT NOT NULL,
+        icon VARCHAR(20) NOT NULL,
+        price INT NOT NULL DEFAULT 0,
+        display_order INT NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )'
+);
+
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS student_planets(
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        student_id INT UNSIGNED NOT NULL,
+        planet_id INT UNSIGNED NOT NULL,
+        purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_student_planet(student_id, planet_id),
+        FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY(planet_id) REFERENCES planets(id) ON DELETE CASCADE
+    )'
+);
+
+function seed_default_planets(PDO $pdo): void
+{
+    $count = (int)$pdo->query('SELECT COUNT(*) FROM planets')->fetchColumn();
+    if ($count > 0) {
+        return;
+    }
+
+    $planets = [
+        ['Terra', 'terra', 'Seu planeta de origem', '🌍', 0, 1],
+        ['Marte', 'marte', 'Planeta da coragem e dos desafios', '🔴', 500, 2],
+        ['Júpiter', 'jupiter', 'Planeta dos grandes desafios', '🟡', 1000, 3],
+        ['Saturno', 'saturno', 'Planeta da persistência', '🪐', 1500, 4],
+        ['Netuno', 'netuno', 'Planeta dos grandes exploradores', '🔵', 2000, 5],
+        ['Urano', 'urano', 'Planeta dos desafios avançados', '🟣', 2500, 6],
+        ['Sol', 'sol', 'Símbolo máximo da jornada', '☀️', 5000, 7],
+    ];
+
+    $stmt = $pdo->prepare('INSERT INTO planets(name, slug, description, icon, price, display_order) VALUES(?,?,?,?,?,?)');
+    foreach ($planets as $planet) {
+        $stmt->execute($planet);
+    }
+}
+
+seed_default_planets($pdo);
+
+function ensure_student_starter_planet(PDO $pdo, int $studentId): void
+{
+    $q = $pdo->prepare('SELECT id FROM planets WHERE slug = ? LIMIT 1');
+    $q->execute(['terra']);
+    $planet = $q->fetch();
+
+    if (!$planet) {
+        return;
+    }
+
+    $q = $pdo->prepare('INSERT IGNORE INTO student_planets(student_id, planet_id) VALUES(?, ?)');
+    $q->execute([$studentId, $planet['id']]);
+}
+
 function e(?string $v): string
 {
     return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
@@ -53,6 +117,10 @@ function login_required(): void
     if (empty($_SESSION['user_id'])) {
         header('Location: login.php');
         exit;
+    }
+
+    if (($GLOBALS['pdo'] ?? null) instanceof PDO && ($_SESSION['role'] ?? '') === 'aluno') {
+        ensure_student_starter_planet($GLOBALS['pdo'], (int)$_SESSION['user_id']);
     }
 }
 function teacher_required(): void

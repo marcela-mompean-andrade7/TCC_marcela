@@ -90,6 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $avatar = !empty($u['profile_photo']) ? $u['profile_photo'] : null;
+
+$q = $pdo->prepare('SELECT p.* FROM student_planets sp JOIN planets p ON p.id = sp.planet_id WHERE sp.student_id = ? ORDER BY p.display_order ASC');
+$q->execute([$_SESSION['user_id']]);
+$ownedPlanets = $q->fetchAll();
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -104,7 +108,7 @@ $avatar = !empty($u['profile_photo']) ? $u['profile_photo'] : null;
 
 <body>
     <header class="nav"><b>MathUp</b>
-        <nav><a href="dashboard.php">Painel</a><a href="logout.php">Sair</a></nav>
+        <nav><a href="dashboard.php">Painel</a><a href="planetas.php">🪐 Planetas</a><a href="logout.php">Sair</a></nav>
     </header>
 
     <main class="container narrow profile-page">
@@ -167,6 +171,28 @@ $avatar = !empty($u['profile_photo']) ? $u['profile_photo'] : null;
                     </form>
                 </div>
             </div>
+
+            <?php if (($u['role'] ?? '') === 'aluno'): ?>
+                <section class="collection-section">
+                    <div class="section-heading">
+                        <h2>🏅 Minha Coleção Cósmica</h2>
+                    </div>
+
+                    <?php if ($ownedPlanets): ?>
+                        <div class="planet-collection">
+                            <?php foreach ($ownedPlanets as $planet): ?>
+                                <article class="collection-item">
+                                    <div class="collection-icon"><?= e($planet['icon']) ?></div>
+                                    <strong><?= e($planet['name']) ?></strong>
+                                    <small><?= $planet['slug'] === 'terra' ? 'Seu planeta de origem' : 'Desbloqueado' ?></small>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="card">Ainda não há planetas na sua coleção.</div>
+                    <?php endif; ?>
+                </section>
+            <?php endif; ?>
         </section>
     </main>
 </body>

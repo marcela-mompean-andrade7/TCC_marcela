@@ -322,6 +322,19 @@ img {
     width: 100%;
 }
 
+.btn.small {
+    min-height: 38px;
+    padding: .62rem 1rem;
+    font-size: .82rem;
+}
+
+.btn.disabled,
+.btn:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+    filter: grayscale(.05);
+}
+
 .btn-secondary,
 .btn.light {
     background:
@@ -1977,5 +1990,216 @@ html[data-theme="light"] .status-orange {
         min-height: 40px;
         padding: 8px 12px;
         font-size: .85rem;
+    }
+}
+
+/* =========================================================
+   PLANETAS / COLEÇÃO CÓSMICA
+========================================================= */
+
+.planet-page {
+    padding: 28px 0 70px;
+}
+
+.planet-shell {
+    padding: 30px;
+    border-radius: 30px;
+    background: linear-gradient(145deg, rgba(12, 25, 52, .96), rgba(6, 12, 26, .99));
+    border: 1px solid rgba(174, 186, 232, .14);
+    box-shadow: 0 25px 65px rgba(0,0,0,.28);
+}
+
+.page-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.planet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.planet-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px 18px 18px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, rgba(15, 31, 64, .94), rgba(8, 14, 29, .98));
+    border: 1px solid rgba(174, 186, 232, .12);
+    box-shadow: 0 18px 40px rgba(0,0,0,.18);
+    transition: transform .3s ease, border-color .3s ease;
+}
+
+.planet-card:hover {
+    transform: translateY(-7px);
+    border-color: rgba(179, 156, 255, .26);
+}
+
+.planet-card.owned {
+    border-color: rgba(97, 211, 155, .32);
+    box-shadow: 0 18px 40px rgba(22, 110, 71, .12);
+}
+
+.planet-card.available {
+    border-color: rgba(139, 212, 255, .3);
+}
+
+.planet-card.locked {
+    border-color: rgba(224, 107, 125, .2);
+}
+
+.planet-emoji {
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.15), transparent 32%), linear-gradient(135deg, rgba(128,104,232,.24), rgba(67,139,208,.20));
+    border: 1px solid rgba(179, 156, 255, .2);
+    font-size: 2.2rem;
+    box-shadow: 0 0 24px rgba(128, 104, 232, .12);
+}
+
+.planet-card h3 {
+    margin: 0;
+    color: var(--white);
+    font-family: "Cinzel", serif;
+    font-size: 1.45rem;
+}
+
+.planet-card p {
+    margin: 0;
+    color: var(--muted);
+    min-height: 56px;
+}
+
+.planet-price {
+    font-size: .8rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    font-weight: 800;
+}
+
+.planet-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.planet-status.success {
+    background: rgba(97, 211, 155, .10);
+    border: 1px solid rgba(97, 211, 155, .22);
+    color: #9de9bc;
+}
+
+.planet-status.warning {
+    background: rgba(224, 107, 125, .10);
+    border: 1px solid rgba(224, 107, 125, .20);
+    color: #ffb7c2;
+}
+
+.planet-status.info {
+    background: rgba(67, 139, 208, .10);
+    border: 1px solid rgba(67, 139, 208, .20);
+    color: #a9d8ff;
+}
+
+.planet-status.neutral {
+    background: rgba(128, 104, 232, .10);
+    border: 1px solid rgba(179, 156, 255, .20);
+    color: var(--purple-light);
+}
+
+.planet-card .btn {
+    width: 100%;
+    min-height: 42px;
+    margin-top: auto;
+    padding: .75rem 1rem;
+}
+
+.planet-card .btn.disabled {
+    opacity: .85;
+    cursor: default;
+}
+
+.collection-section {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(174, 186, 232, .08);
+}
+
+.section-heading h2 {
+    margin: 0 0 18px;
+    font-family: "Cinzel", serif;
+    color: var(--gold-light);
+}
+
+.planet-collection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+}
+
+.collection-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 12px;
+    text-align: center;
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(16,31,63,.84), rgba(7,14,29,.95));
+    border: 1px solid rgba(174, 186, 232, .12);
+    box-shadow: 0 14px 28px rgba(0,0,0,.15);
+}
+
+.collection-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.14), transparent 38%), linear-gradient(135deg, rgba(128,104,232,.18), rgba(67,139,208,.16));
+    border: 1px solid rgba(179,156,255,.18);
+    font-size: 2rem;
+}
+
+.collection-item strong {
+    color: var(--white);
+    font-size: .95rem;
+}
+
+.collection-item small {
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+    .page-header,
+    .planet-shell,
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .planet-shell {
+        padding: 22px 18px;
+    }
+
+    .planet-collection {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }

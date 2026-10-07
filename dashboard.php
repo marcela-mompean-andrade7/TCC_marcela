@@ -38,7 +38,7 @@ if ($u['role'] === 'aluno') {
 
 <body>
     <header class="nav"><b>MathUp</b>
-        <nav><span><?= e($u['name']) ?></span><?php if ($u['role'] === 'professor'): ?><a href="professor/">Professor</a><?php endif; ?><a href="perfil.php">Perfil</a><a href="logout.php">Sair</a></nav>
+        <nav><span><?= e($u['name']) ?></span><?php if ($u['role'] === 'professor'): ?><a href="professor/">Professor</a><?php endif; ?><?php if ($u['role'] === 'aluno'): ?><a href="planetas.php">🪐 Planetas</a><?php endif; ?><a href="perfil.php">Perfil</a><a href="logout.php">Sair</a></nav>
     </header>
     <main class="container">
         <div class="welcome">
