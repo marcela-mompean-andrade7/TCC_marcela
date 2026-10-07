@@ -12,6 +12,7 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
     <meta name="theme-color" content="#050817">
     <title>Lunaris Academy - Matemática Gamificada</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/theme.js"></script>
 </head>
 
 <body>

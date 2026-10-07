@@ -13,6 +13,12 @@ $questions = $q->fetchAll();
 $q = $pdo->prepare('SELECT * FROM submissions WHERE activity_id=? AND student_id=?');
 $q->execute([$id, $_SESSION['user_id']]);
 $done = $q->fetch();
+$savedAnswers = [];
+if (!$done) {
+    $q = $pdo->prepare('SELECT question_id, answer FROM activity_progress WHERE activity_id=? AND student_id=?');
+    $q->execute([$id, $_SESSION['user_id']]);
+    $savedAnswers = array_column($q->fetchAll(), 'answer', 'question_id');
+}
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -24,6 +30,7 @@ $done = $q->fetch();
         <?= e($a['title']) ?>
     </title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/theme.js"></script>
 </head>
 
 <body>
@@ -69,15 +76,67 @@ $done = $q->fetch();
 
                         <label class="answer-field">
                             <span>Sua resposta</span>
-                            <input class="answer-input" type="text" name="answers[<?= $x['id'] ?>]" required>
+                            <input class="answer-input" type="text" name="answers[<?= $x['id'] ?>]" value="<?= e((string)($savedAnswers[$x['id']] ?? '')) ?>" maxlength="120" required>
                         </label>
                     </div>
                 <?php endforeach; ?>
 
+                <p class="activity-save-status" aria-live="polite"></p>
                 <button class="btn activity-submit" type="submit">Enviar atividade</button>
             </form>
         <?php endif; ?>
     </main>
+    <?php if (!$done && $questions): ?>
+        <script>
+            const form = document.querySelector('.activity-form');
+            const saveStatus = document.querySelector('.activity-save-status');
+            let saveTimer;
+            let saveQueue = Promise.resolve();
+
+            function queueProgressSave() {
+                const formData = new URLSearchParams(new FormData(form));
+                saveStatus.textContent = 'Salvando progresso...';
+                saveStatus.classList.remove('save-error');
+
+                saveQueue = saveQueue.catch(() => {}).then(async () => {
+                    const response = await fetch('salvar_progresso.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Não foi possível salvar o progresso.');
+                    }
+                    saveStatus.textContent = 'Progresso salvo.';
+                }).catch((error) => {
+                    saveStatus.textContent = error.message;
+                    saveStatus.classList.add('save-error');
+                    throw error;
+                });
+
+                return saveQueue;
+            }
+
+            form.addEventListener('input', () => {
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => queueProgressSave().catch(() => {}), 500);
+            });
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                clearTimeout(saveTimer);
+                const submitButton = form.querySelector('[type="submit"]');
+                submitButton.disabled = true;
+                try {
+                    await queueProgressSave();
+                    form.submit();
+                } catch {
+                    submitButton.disabled = false;
+                }
+            });
+        </script>
+    <?php endif; ?>
 </body>
 
 </html>

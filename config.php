@@ -18,6 +18,20 @@ try {
     exit('Erro ao conectar ao banco. Confira o XAMPP e o banco mathup.');
 }
 
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS activity_progress(
+        activity_id INT UNSIGNED NOT NULL,
+        student_id INT UNSIGNED NOT NULL,
+        question_id INT UNSIGNED NOT NULL,
+        answer VARCHAR(120) NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY(activity_id,student_id,question_id),
+        FOREIGN KEY(activity_id) REFERENCES activities(id) ON DELETE CASCADE,
+        FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
+    )'
+);
+
 function e(?string $v): string
 {
     return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');

@@ -28,6 +28,7 @@ $questions = $q->fetchAll();
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Questões</title>
     <link rel="stylesheet" href="../assets/style.css">
+    <script src="../assets/theme.js"></script>
 </head>
 
 <body>

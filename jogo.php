@@ -49,6 +49,7 @@ function q(string $game, int $l): array
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Jogo</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/theme.js"></script>
 </head>
 
 <body>

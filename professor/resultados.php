@@ -150,6 +150,7 @@ $rows = $q->fetchAll();
     </title>
 
     <link rel="stylesheet" href="../assets/style.css">
+    <script src="../assets/theme.js"></script>
 
 </head>
 
