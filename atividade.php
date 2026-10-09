@@ -21,7 +21,7 @@ if (!$done) {
 }
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">
@@ -36,9 +36,9 @@ if (!$done) {
 <body>
     <header class="nav">
         <b>MathUp</b>
-        <nav>
-            <a href="dashboard.php">Painel</a>
-            <a href="logout.php">Sair</a>
+        <nav lang="<?= e(current_language()) ?>">
+            <a href="dashboard.php"><?= e(t('Painel')) ?></a>
+            <a href="logout.php"><?= e(t('Sair')) ?></a>
         </nav>
     </header>
 

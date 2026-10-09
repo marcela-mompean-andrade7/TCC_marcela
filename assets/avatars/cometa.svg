@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Cometa, Mensageiro Estelar</title><desc id="desc">Mensageiro veloz com cabelo em rastro azul, jaqueta de voo e broche de cometa.</desc>
+  <defs><linearGradient id="suit" x2="1" y2="1"><stop stop-color="#477bd5"/><stop offset="1" stop-color="#42c3d2"/></linearGradient><linearGradient id="hair" x2="1"><stop stop-color="#b9f2ff"/><stop offset="1" stop-color="#4385d7"/></linearGradient></defs>
+  <g fill="#b9e9ff" opacity=".8"><path d="M15 73q32-30 52-22-20 3-34 21 19-8 34-2-29 5-50 28z"/><path d="M19 108q24-20 43-14-20 5-33 22z"/></g>
+  <path d="M30 201q4-47 36-62h48q32 15 36 62z" fill="url(#suit)" stroke="#345da9" stroke-width="4"/><path d="m71 144 19 24 19-24-8-10H79z" fill="#f4dc9c"/><path d="m52 160 22 4-10 20-20-6zM128 160l-22 4 10 20 20-6z" fill="#f1f7ff" stroke="#728ee0" stroke-width="3"/>
+  <path d="M59 68q7-37 34-39 31 2 33 41l-7 46q-7 22-29 23-24-3-31-29z" fill="#e9b99e"/><path d="M59 75q-2-41 34-48 28 4 38 32l-19-5-17-17q-9 20-36 38z" fill="url(#hair)"/><path d="M63 79q-14 34 9 54l-4-29zM119 79q15 34-8 54l4-29z" fill="#4181ce"/>
+  <g fill="#314a78"><ellipse cx="80" cy="91" rx="2.7" ry="3.4"/><ellipse cx="101" cy="91" rx="2.7" ry="3.4"/></g><path d="M83 108q7 5 14 0" fill="none" stroke="#b36878" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="m90 151 5 9 10 1-8 7 2 10-9-5-9 5 2-10-8-7 10-1z" fill="#fff0a8" stroke="#ca982f" stroke-width="2"/>
+</svg>

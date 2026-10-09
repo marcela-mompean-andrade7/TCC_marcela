@@ -2,6 +2,9 @@
 require 'config.php';
 login_required();
 if (($_SESSION['role'] ?? '') !== 'aluno') redirect('dashboard.php');
+$q = $pdo->prepare('SELECT a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
+$q->execute([$_SESSION['user_id']]);
+$currentAvatar = $q->fetch();
 $names = ['operacoes' => 'Operações com Números', 'fracoes' => 'Frações e Razões', 'equacoes' => 'Equações de 1º Grau', 'geometria' => 'Área e Perímetro'];
 $game = $_GET['game'] ?? 'operacoes';
 if (!isset($names[$game])) $game = 'operacoes';
@@ -42,7 +45,7 @@ function q(string $game, int $l): array
 [$question, $answer] = q($game, $level);
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">
@@ -54,7 +57,7 @@ function q(string $game, int $l): array
 
 <body>
     <header class="nav"><b>MathUp</b>
-        <nav><a href="dashboard.php">Painel</a></nav>
+        <nav><?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e(($currentAvatar['image_path'] ?? '') ?: 'assets/avatars/galaxia.svg') ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="38" height="38"><?php endif; ?><a href="universo.php">🌌 Universo</a><a href="dashboard.php">Painel</a><a href="avatares.php">🎭 Avatares</a></nav>
     </header>
     <main class="container narrow">
         <div class="levelbar"><b>Nível <?= $level ?> • <?= $labels[$level - 1] ?></b><span>⭐ até <?= $level * 10 ?> pontos</span></div>
@@ -62,7 +65,7 @@ function q(string $game, int $l): array
             <h1><?= e($question) ?></h1>
             <form method="post" action="jogo_resultado.php"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="game" value="<?= e($game) ?>"><input type="hidden" name="level" value="<?= $level ?>"><input type="hidden" name="answer" value="<?= e($answer) ?>"><input name="user_answer" required autocomplete="off" placeholder="Digite sua resposta"><button class="btn full">Responder</button></form>
         </div>
-        <p class="hint">💡 Resolva com calma. Se acertar, você pode avançar de nível.</p>
+        <p class="hint">Resolva com calma. Se acertar, você pode avançar de nível.</p>
     </main>
 </body>
 

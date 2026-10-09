@@ -20,7 +20,7 @@ $q->execute([$me]);
 $acts = $q->fetchAll();
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">
@@ -32,7 +32,7 @@ $acts = $q->fetchAll();
 
 <body>
     <header class="nav"><b>MathUp • Professor</b>
-        <nav><a href="../dashboard.php">Painel</a><a href="criar.php">Nova atividade</a><a href="../logout.php">Sair</a></nav>
+        <nav lang="<?= e(current_language()) ?>"><a href="../dashboard.php"><?= e(t('Painel')) ?></a><a href="criar.php"><?= e(t('Nova atividade')) ?></a><a href="../logout.php"><?= e(t('Sair')) ?></a></nav>
     </header>
     <main class="container teacher-panel">
         <div class="teacher-header">

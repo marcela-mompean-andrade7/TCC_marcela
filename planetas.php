@@ -10,6 +10,16 @@ $q = $pdo->prepare('SELECT * FROM users WHERE id = ? LIMIT 1');
 $q->execute([$_SESSION['user_id']]);
 $u = $q->fetch();
 
+$planetArtwork = [
+    'terra' => ['path' => 'assets/planets/terra.jpg', 'alt' => 'Terra vista do espaço', 'credit' => 'NASA / Apollo 17'],
+    'marte' => ['path' => 'assets/planets/marte.jpg', 'alt' => 'Superfície e relevo de Marte vistos do espaço', 'credit' => 'NASA / JPL / USGS'],
+    'jupiter' => ['path' => 'assets/planets/jupiter.jpg', 'alt' => 'Júpiter com suas faixas atmosféricas e luas', 'credit' => 'NASA / JPL'],
+    'saturno' => ['path' => 'assets/planets/saturno.jpg', 'alt' => 'Saturno e seus anéis vistos pela Voyager 2', 'credit' => 'NASA / JPL'],
+    'netuno' => ['path' => 'assets/planets/netuno.jpg', 'alt' => 'Netuno e suas nuvens vistos pela Voyager 2', 'credit' => 'NASA / JPL'],
+    'urano' => ['path' => 'assets/planets/urano.jpg', 'alt' => 'Urano em cores naturais visto pela Voyager 2', 'credit' => 'NASA / JPL'],
+    'sol' => ['path' => 'assets/planets/sol.jpg', 'alt' => 'Superfície e plasma solar observados pelo SDO', 'credit' => 'NASA / GSFC / SDO / AIA'],
+];
+
 $notice = '';
 $errors = [];
 
@@ -74,19 +84,29 @@ $q->execute([$_SESSION['user_id']]);
 $planets = $q->fetchAll();
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#F5F7FF">
     <title>Planetas</title>
     <link rel="stylesheet" href="assets/style.css">
     <script src="assets/theme.js"></script>
 </head>
 
 <body>
-    <header class="nav"><b>MathUp</b>
-        <nav><a href="dashboard.php">Painel</a><a href="perfil.php">Perfil</a><a href="logout.php">Sair</a></nav>
+    <header class="nav">
+        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <nav lang="<?= e(current_language()) ?>">
+            <a href="dashboard.php"><?= e(t('Painel')) ?></a>
+            <a href="universo.php">🌌 <?= e(t('Universo')) ?></a>
+            <a href="missoes.php">🚀 <?= e(t('Missões')) ?></a>
+            <a href="planetas.php" aria-current="page">🪐 <?= e(t('Planetas')) ?></a>
+            <a href="avatares.php">🎭 <?= e(t('Avatares')) ?></a>
+            <a href="perfil.php">🏅 <?= e(t('Perfil')) ?></a>
+            <a href="logout.php"><?= e(t('Sair')) ?></a>
+        </nav>
     </header>
 
     <main class="container narrow planet-page">
@@ -95,6 +115,7 @@ $planets = $q->fetchAll();
                 <div>
                     <span class="tag">🪐 Planetas</span>
                     <h1>Loja de planetas</h1>
+                    <p class="page-description">Amplie sua coleção e descubra novos mundos com os pontos conquistados.</p>
                 </div>
                 <div class="points">⭐ <?= e((string)$u['points']) ?> pontos</div>
             </div>
@@ -112,9 +133,17 @@ $planets = $q->fetchAll();
                     $owned = (bool)$planet['owned'];
                     $planetPrice = (int)$planet['price'];
                     $canAfford = !$owned && $u['points'] >= $planetPrice;
+                    $artwork = $planetArtwork[$planet['slug']] ?? null;
                 ?>
-                    <article class="planet-card <?= $owned ? 'owned' : ($canAfford ? 'available' : 'locked') ?>">
-                        <div class="planet-emoji"><?= e($planet['icon']) ?></div>
+                    <article class="planet-card planet-card--<?= e($planet['slug']) ?> <?= $owned ? 'owned' : ($canAfford ? 'available' : 'locked') ?>">
+                        <div class="planet-visual">
+                            <?php if ($artwork): ?>
+                                <img src="<?= e($artwork['path']) ?>" alt="<?= e($artwork['alt']) ?>" width="240" height="240" loading="lazy" decoding="async">
+                                <span class="planet-image-credit"><?= e($artwork['credit']) ?></span>
+                            <?php else: ?>
+                                <span class="planet-artwork-pending" role="img" aria-label="Ilustração de <?= e($planet['name']) ?> em preparação">Ilustração em preparação</span>
+                            <?php endif; ?>
+                        </div>
                         <h3><?= e($planet['name']) ?></h3>
                         <p><?= e($planet['description']) ?></p>
                         <div class="planet-price"><?= $planetPrice === 0 ? 'GRÁTIS' : e((string)$planetPrice) . ' pontos' ?></div>

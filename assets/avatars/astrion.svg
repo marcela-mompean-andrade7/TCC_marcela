@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Astrion, Explorador Cósmico</title><desc id="desc">Ilustração original de um explorador espacial com capacete de vidro, traje azul e insígnias estelares.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#dff6ff"/><stop offset="1" stop-color="#c9d8ff"/></linearGradient><linearGradient id="suit" x2="1" y2="1"><stop stop-color="#5366c4"/><stop offset="1" stop-color="#36a6bd"/></linearGradient><linearGradient id="glass" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#a5dcf4" stop-opacity=".45"/></linearGradient></defs>
+  <rect x="4" y="4" width="172" height="202" rx="34" fill="url(#bg)"/><circle cx="32" cy="44" r="18" fill="#ffebb3"/><g fill="#fff"><path d="m134 39 2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><circle cx="43" cy="100" r="2"/><circle cx="140" cy="91" r="2.5"/></g>
+  <path d="M22 199q5-45 38-57h60q33 12 38 57z" fill="url(#suit)"/><path d="M72 141h36l10 57H62z" fill="#eef6ff" stroke="#5269bd" stroke-width="3"/><path d="M82 153h16v21H82z" rx="4" fill="#7dddf2"/><circle cx="90" cy="62" r="46" fill="url(#glass)" stroke="#667ed0" stroke-width="7"/><path d="M56 65q3-33 34-35 28 2 34 34-17 7-34 6-18 0-34-5z" fill="#563e9a"/><path d="M62 70q0-29 28-30 28 1 28 30v21q-4 24-28 25-23-2-28-25z" fill="#f3c8ad"/>
+  <path d="M65 68q5-29 32-28 17 2 24 20-19-2-32-14-7 14-24 22z" fill="#48377f"/><g fill="#344575"><ellipse cx="80" cy="82" rx="2.5" ry="3"/><ellipse cx="101" cy="82" rx="2.5" ry="3"/></g><path d="M83 98q7 5 14 0" fill="none" stroke="#b56f78" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="m90 158 3 5 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#f6d875"/>
+</svg>

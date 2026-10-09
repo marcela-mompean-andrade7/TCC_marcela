@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Estella, Arqueira Celeste</title><desc id="desc">Arqueira de cabelos ruivos presos, túnica verde-azulada e arco de energia estelar.</desc>
+  <defs><linearGradient id="tunic" x2="1"><stop stop-color="#328e9e"/><stop offset="1" stop-color="#476bb4"/></linearGradient></defs>
+  <g fill="#ffe4a3"><path d="m35 45 2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><circle cx="143" cy="55" r="3"/><circle cx="132" cy="95" r="2"/></g>
+  <path d="M28 201q5-45 39-62h46q34 17 39 62z" fill="url(#tunic)" stroke="#286979" stroke-width="4"/><path d="m69 143 21 27 21-27-10-12H79z" fill="#f4e5c0"/><path d="M58 73q1-37 32-42 33 3 35 43l-7 43q-8 20-28 22-23-4-30-27z" fill="#edb99d"/><path d="M57 79q-6-43 34-51 31 4 38 41l-18-4-14-17q-8 21-38 31z" fill="#b85b46"/><path d="M62 80q-14 32 9 53l-5-32zM119 80q14 34-10 54l5-32z" fill="#914838"/><path d="M64 49q4-16 24-17M113 35q13 8 15 23" fill="none" stroke="#f0a45d" stroke-width="6" stroke-linecap="round"/>
+  <g fill="#37496e"><ellipse cx="80" cy="91" rx="2.6" ry="3.2"/><ellipse cx="101" cy="91" rx="2.6" ry="3.2"/></g><path d="M83 108q7 5 14 0" fill="none" stroke="#b36878" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M139 89q36 20 0 49" fill="none" stroke="#f2d77e" stroke-width="4"/><path d="M140 90v48M136 114h10" stroke="#77d7eb" stroke-width="3"/><path d="m140 88 3 7 7 3-7 2-3 7-2-7-7-2 7-3z" fill="#fff7c8"/>
+</svg>

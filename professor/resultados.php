@@ -133,7 +133,7 @@ $rows = $q->fetchAll();
 
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
 
@@ -156,6 +156,15 @@ $rows = $q->fetchAll();
 
 <body>
 
+<header class="nav teacher-create-nav">
+    <b>Lunaris Academy • Professor</b>
+    <nav lang="<?= e(current_language()) ?>">
+        <a href="index.php"><?= e(t('Minhas atividades')) ?></a>
+        <a href="criar.php"><?= e(t('Nova atividade')) ?></a>
+        <a href="../logout.php"><?= e(t('Sair')) ?></a>
+    </nav>
+</header>
+
 <main class="container results-page">
 
     <!-- ================================
@@ -172,7 +181,7 @@ $rows = $q->fetchAll();
             </a>
 
             <p class="page-tag">
-                📊 PAINEL DO PROFESSOR
+                PAINEL DO PROFESSOR
             </p>
 
             <h1>
@@ -188,7 +197,7 @@ $rows = $q->fetchAll();
         <div class="header-actions">
 
             <a href="criar.php" class="btn">
-                ✨ Postar Atividade
+                Postar Atividade
             </a>
 
             <form method="POST"
@@ -271,7 +280,7 @@ $rows = $q->fetchAll();
         <div class="results-heading">
 
             <div>
-                <h2>📊 Resultados dos alunos</h2>
+                <h2>Resultados dos alunos</h2>
 
                 <p>
                     Confira o desempenho dos alunos nesta atividade.
@@ -378,7 +387,7 @@ $rows = $q->fetchAll();
                 </p>
 
                 <a href="criar.php" class="btn">
-                    ✨ Criar outra atividade
+                    Criar outra atividade
                 </a>
 
             </div>

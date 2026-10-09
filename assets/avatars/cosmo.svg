@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Cosmo, Inventor Galáctico</title><desc id="desc">Inventor de cabelos verdes encaracolados, óculos redondos e avental cheio de ferramentas.</desc>
+  <defs><linearGradient id="coat" x2="1"><stop stop-color="#5576c8"/><stop offset="1" stop-color="#6b54ac"/></linearGradient></defs>
+  <g fill="#a8e9e4"><circle cx="39" cy="55" r="5"/><circle cx="142" cy="70" r="3"/><path d="m132 37 3 7 7 3-7 2-3 7-2-7-7-2 7-3z"/></g>
+  <path d="M26 201q5-47 39-62h50q34 15 39 62z" fill="url(#coat)" stroke="#394b92" stroke-width="4"/><path d="M68 147h44l12 54H56z" fill="#f4dfad" stroke="#a67d38" stroke-width="3"/><path d="m73 157 15 8-9 11-14-9zM110 157l-15 8 9 11 14-9z" fill="#7acac3" stroke="#438f9a" stroke-width="2"/>
+  <path d="M59 74q-4-31 11-38 3-17 19-13 10-17 24-5 20-5 24 18 14 13 7 37l-7 40q-8 20-28 22-25-4-32-28z" fill="#e8b79d"/><g fill="#54aa8a"><circle cx="63" cy="57" r="15"/><circle cx="79" cy="34" r="15"/><circle cx="101" cy="29" r="16"/><circle cx="121" cy="42" r="16"/><path d="M57 64q-7 35 13 61l-4-32zM125 62q10 38-11 61l6-33z"/></g>
+  <g fill="none" stroke="#493e74" stroke-width="4"><circle cx="79" cy="89" r="12"/><circle cx="102" cy="89" r="12"/><path d="M91 89h-1"/></g><g fill="#493e74"><circle cx="80" cy="89" r="2.5"/><circle cx="101" cy="89" r="2.5"/></g><path d="M83 109q7 5 14 0" fill="none" stroke="#b36878" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M90 169v20M82 178h16" stroke="#6679cf" stroke-width="5" stroke-linecap="round"/><circle cx="90" cy="170" r="6" fill="#fff3b3" stroke="#c69436" stroke-width="2"/>
+</svg>

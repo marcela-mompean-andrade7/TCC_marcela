@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Luna, Guardiã Lunar</title><desc id="desc">Ilustração original de uma guardiã lunar com cabelo lilás, capa azul-violeta e broche crescente.</desc>
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#eee7ff"/><stop offset="1" stop-color="#c8e8ff"/></linearGradient><linearGradient id="cape" x2="1"><stop stop-color="#6654bd"/><stop offset="1" stop-color="#3995bb"/></linearGradient><linearGradient id="hair" x2="1" y2="1"><stop stop-color="#b89bf2"/><stop offset="1" stop-color="#7357ba"/></linearGradient></defs>
+  <rect x="4" y="4" width="172" height="202" rx="34" fill="url(#bg)"/><circle cx="140" cy="42" r="19" fill="#fff8d7"/><path d="M145 27a18 18 0 1 0 13 29 19 19 0 1 1-13-29" fill="#d3b9ff"/>
+  <g fill="#fff" opacity=".9"><path d="m35 35 2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><circle cx="132" cy="88" r="2"/><circle cx="45" cy="91" r="2.5"/></g>
+  <path d="M30 198q4-49 35-59h50q31 10 35 59z" fill="url(#cape)"/><path d="M68 142 90 170l22-28-9-10H77z" fill="#f3d98b"/>
+  <path d="M58 73q-1-37 32-42 35 3 34 45l-8 43q-6 21-27 21-25-4-30-29z" fill="url(#hair)"/><path d="M64 78q-4-25 26-31 25 3 27 29l-3 29q-7 23-27 24-22-4-25-27z" fill="#f4c9b7"/>
+  <path d="M61 77q8-38 40-31 16 5 19 23-22-7-33-23-6 21-26 31z" fill="url(#hair)"/><path d="M62 84q-15 34 9 53l-4-29zM118 84q16 37-9 55l7-31z" fill="#8064c2"/>
+  <g fill="#503d74"><ellipse cx="79" cy="91" rx="2.6" ry="3.2"/><ellipse cx="102" cy="91" rx="2.6" ry="3.2"/></g><path d="M83 108q7 6 14 0" fill="none" stroke="#b66d78" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="m90 144 5 11-5 10-5-10z" fill="#fff2ad" stroke="#b58a27" stroke-width="2"/>
+</svg>

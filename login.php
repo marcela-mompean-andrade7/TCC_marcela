@@ -13,6 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['user_id'] = $u['id'];
     $_SESSION['role'] = $u['role'];
     $_SESSION['name'] = $u['name'];
+    set_language($u['preferred_language'] ?? 'pt-BR');
+    $_SESSION['lunaris_accessibility'] = normalize_accessibility_preferences($u['accessibility_needs'] ?? null);
+    $_SESSION['lunaris_preferences_loaded'] = true;
 
     if (($u['role'] ?? '') === 'aluno') {
       ensure_student_starter_planet($pdo, (int)$u['id']);
@@ -23,21 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Entrar</title>
+  <title><?= e(t('Entrar')) ?> — Lunaris Academy</title>
   <link rel="stylesheet" href="assets/style.css">
   <script src="assets/theme.js"></script>
 </head>
 
 <body>
-  <main class="auth card"><a href="index.php">← Início</a>
-    <h1>Entrar</h1><?php if ($error): ?><div class="alert"><?= e($error) ?></div><?php endif; ?><?php if (isset($_GET['ok'])): ?><div class="success">Cadastro realizado! Faça seu login.</div><?php endif; ?>
-    <form method="post"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><label>E-mail<input type="email" name="email" required></label><label>Senha<input type="password" name="password" required></label><button class="btn full">Entrar</button></form>
-    <p>Não tem conta? <a href="cadastro.php">Cadastrar</a></p>
+  <main class="auth card"><a href="index.php"><?= e(t('← Início')) ?></a>
+    <h1><?= e(t('Entrar')) ?></h1><?php if ($error): ?><div class="alert" role="alert"><?= e(t($error)) ?></div><?php endif; ?><?php if (isset($_GET['ok'])): ?><div class="success"><?= e(t('Cadastro realizado! Faça seu login.')) ?></div><?php endif; ?>
+    <form method="post"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><label><?= e(t('E-mail')) ?><input type="email" name="email" required></label><label><?= e(t('Senha')) ?><input type="password" name="password" required></label><button class="btn full"><?= e(t('Entrar')) ?></button></form>
+    <p><?= e(t('Não tem conta?')) ?> <a href="cadastro.php"><?= e(t('Cadastrar')) ?></a></p>
   </main>
 </body>
 

@@ -21,27 +21,89 @@ $q->execute([$id]);
 $questions = $q->fetchAll();
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Questões</title>
+    <title>Questões da atividade — Lunaris Academy</title>
     <link rel="stylesheet" href="../assets/style.css">
     <script src="../assets/theme.js"></script>
 </head>
 
 <body>
-    <main class="container narrow"><a href="index.php">← Painel</a>
-        <div class="card"><span class="tag"><?= e($a['difficulty']) ?></span>
-            <h1><?= e($a['title']) ?></h1>
+    <header class="nav teacher-create-nav">
+        <b>Lunaris Academy • Professor</b>
+        <nav lang="<?= e(current_language()) ?>">
+            <a href="index.php"><?= e(t('Minhas atividades')) ?></a>
+            <a href="criar.php"><?= e(t('Nova atividade')) ?></a>
+            <a href="../logout.php"><?= e(t('Sair')) ?></a>
+        </nav>
+    </header>
+    <main class="container teacher-question-page">
+        <header class="teacher-question-hero">
+            <div>
+                <span class="tag">Atividade · Questões</span>
+                <h1>Monte o desafio da sua turma</h1>
+                <p>Adicione enunciados e respostas corretas para preparar a atividade.</p>
+            </div>
+            <a class="btn btn-secondary" href="index.php">← Voltar ao painel</a>
+        </header>
+
+        <section class="teacher-activity-summary" aria-labelledby="activity-title">
+            <span class="tag"><?= e($a['difficulty']) ?></span>
+            <h2 id="activity-title"><?= e($a['title']) ?></h2>
             <p><?= nl2br(e($a['description'])) ?></p>
-        </div>
-        <div class="card">
-            <h2>Adicionar questão</h2>
-            <form method="post"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="id" value="<?= $id ?>"><label>Questão<textarea name="question_text" required rows="3"></textarea></label><label>Resposta correta<input name="answer" required></label><button class="btn">Adicionar</button></form>
-        </div>
-        <h2>Questões (<?= count($questions) ?>)</h2><?php foreach ($questions as $i => $x): ?><div class="card"><b><?= ($i + 1) ?>.</b> <?= e($x['question_text']) ?><br><small>Resposta: <?= e($x['answer']) ?></small></div><?php endforeach; ?>
+        </section>
+
+        <section class="teacher-question-composer" aria-labelledby="question-form-title">
+            <div class="teacher-create-section-heading">
+                <span class="teacher-create-step" aria-hidden="true">+</span>
+                <div>
+                    <h2 id="question-form-title">Adicionar questão</h2>
+                    <p>Escreva o enunciado e informe a resposta esperada.</p>
+                </div>
+            </div>
+            <form method="post" class="teacher-create-form">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="id" value="<?= $id ?>">
+                <label class="teacher-field teacher-field-wide">Enunciado da questão
+                    <textarea name="question_text" required rows="3"></textarea>
+                </label>
+                <label class="teacher-field teacher-field-wide">Resposta correta
+                    <input name="answer" required>
+                </label>
+                <div class="teacher-create-actions">
+                    <span>Confira o enunciado e a resposta antes de adicionar.</span>
+                    <button class="btn" type="submit">Adicionar questão</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="teacher-question-list" aria-labelledby="question-list-title">
+            <div class="teacher-question-list-heading">
+                <div>
+                    <span class="tag">Conteúdo da atividade</span>
+                    <h2 id="question-list-title">Questões adicionadas</h2>
+                </div>
+                <span class="teacher-question-count"><?= count($questions) ?> <?= count($questions) === 1 ? 'questão' : 'questões' ?></span>
+            </div>
+            <?php if (!$questions): ?>
+                <p class="teacher-question-empty">Nenhuma questão adicionada ainda. Use o formulário acima para começar.</p>
+            <?php else: ?>
+                <ol class="teacher-question-items">
+                    <?php foreach ($questions as $i => $x): ?>
+                        <li class="teacher-question-item">
+                            <span class="teacher-question-number" aria-label="Questão <?= $i + 1 ?>"><?= $i + 1 ?></span>
+                            <div>
+                                <p><?= nl2br(e($x['question_text'])) ?></p>
+                                <small><strong>Resposta correta:</strong> <?= e($x['answer']) ?></small>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ol>
+            <?php endif; ?>
+        </section>
     </main>
 </body>
 

@@ -19,56 +19,127 @@ if ($u['role'] === 'aluno') {
 }
 $res = [];
 $totalPoints = (int)$u['points'];
+$currentAvatar = null;
+$missionSummary = null;
+$recommendedMission = null;
 if ($u['role'] === 'aluno') {
     $q = $pdo->prepare("SELECT * FROM game_results WHERE student_id=? ORDER BY played_at DESC LIMIT 10");
     $q->execute([$u['id']]);
     $res = $q->fetchAll();
+
+    $q = $pdo->prepare('SELECT a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
+    $q->execute([$u['id']]);
+    $currentAvatar = $q->fetch();
+
+    $q = $pdo->prepare(
+        'SELECT COUNT(*) AS total_missions,
+                (SELECT COUNT(*) FROM mission_rewards WHERE student_id = ?) AS completed_missions,
+                (SELECT COALESCE(SUM(stars), 0) FROM mission_rewards WHERE student_id = ?) AS mission_stars
+         FROM missions'
+    );
+    $q->execute([$u['id'], $u['id']]);
+    $missionSummary = $q->fetch();
+
+    $q = $pdo->prepare(
+        'SELECT m.slug, m.title,
+                (SELECT a.current_question FROM mission_attempts a
+                 WHERE a.student_id = ? AND a.mission_id = m.id
+                 ORDER BY a.id DESC LIMIT 1) AS current_question,
+                m.question_count
+         FROM missions m
+         WHERE NOT EXISTS (
+             SELECT 1 FROM mission_rewards r WHERE r.student_id = ? AND r.mission_id = m.id
+         )
+         ORDER BY m.display_order, m.id
+         LIMIT 1'
+    );
+    $q->execute([$u['id'], $u['id']]);
+    $recommendedMission = $q->fetch();
 }
 ?>
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Painel</title>
+    <meta name="theme-color" content="#F5F7FF">
+    <title><?= e(t('Painel')) ?> — Lunaris Academy</title>
     <link rel="stylesheet" href="assets/style.css">
     <script src="assets/theme.js"></script>
 </head>
 
 <body>
-    <header class="nav"><b>MathUp</b>
-        <nav><span><?= e($u['name']) ?></span><?php if ($u['role'] === 'professor'): ?><a href="professor/">Professor</a><?php endif; ?><?php if ($u['role'] === 'aluno'): ?><a href="planetas.php">🪐 Planetas</a><?php endif; ?><a href="perfil.php">Perfil</a><a href="logout.php">Sair</a></nav>
+    <header class="nav">
+        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <nav lang="<?= e(current_language()) ?>">
+            <span><?= e($u['name']) ?></span>
+            <a href="dashboard.php" aria-current="page"><?= e(t('Painel')) ?></a>
+            <?php if ($u['role'] === 'professor'): ?><a href="professor/"><?= e(t('Professor')) ?></a><?php endif; ?>
+            <?php if ($u['role'] === 'aluno'): ?>
+                <a href="universo.php"><?= e(t('Universo')) ?></a>
+                <a href="missoes.php"><?= e(t('Missões')) ?></a>
+                <a href="planetas.php"><?= e(t('Planetas')) ?></a>
+                <a href="avatares.php"><?= e(t('Avatares')) ?></a>
+            <?php endif; ?>
+            <a href="perfil.php"><?= e(t('Perfil')) ?></a>
+            <a href="logout.php"><?= e(t('Sair')) ?></a>
+        </nav>
     </header>
     <main class="container">
         <div class="welcome">
-            <div><span class="tag"><?= e(strtoupper($u['role'])) ?></span>
-                <h1>Olá, <?= e($u['name']) ?>!</h1>
-                <p><?= e($u['escola']) ?> • <?= e($u['regiao']) ?><?php if ($u['serie']): ?> • <?= e($u['serie']) ?><?php endif; ?></p>
+            <div class="welcome-copy"><span class="tag"><?= e(t($u['role'])) ?></span>
+                <div class="welcome-title">
+                    <?php if ($currentAvatar): ?><img class="welcome-avatar-image" src="<?= e(($currentAvatar['image_path'] ?? '') ?: 'assets/avatars/galaxia.svg') ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="54" height="54"><?php endif; ?>
+                    <h1><?= e(t('Olá,')) ?> <?= e($u['name']) ?>!</h1>
+                </div>
+                <p><?= e($u['escola']) ?> • <?= e(t($u['regiao'])) ?><?php if ($u['serie']): ?> • <?= e(t($u['serie'])) ?><?php endif; ?></p>
+                <?php if ($currentAvatar): ?><p class="dashboard-avatar-name">🎭 <?= e($currentAvatar['name']) ?></p><?php endif; ?>
             </div>
-            <div class="points">⭐ <?= $totalPoints ?> pontos</div>
+            <?php if ($u['role'] === 'aluno'): ?>
+                <div class="points">🌟<?= $totalPoints ?> <?= e(t('pontos')) ?></div>
+            <?php endif; ?>
         </div>
         <?php if ($u['role'] === 'aluno'): ?>
-            <h2>🎮 Jogos</h2>
+            <section class="dashboard-mission">
+                <div class="dashboard-mission-copy">
+                    <span class="tag"><?= e(t('Missões Espaciais')) ?></span>
+                    <h2><?= e(t('Sua próxima jornada matemática')) ?></h2>
+                    <p><?= e(t('Conclua desafios e receba 25 estrelas extras por missão.')) ?></p>
+                    <?php if ($recommendedMission): ?>
+                        <a class="btn small" href="missoes.php?mission=<?= e($recommendedMission['slug']) ?>">
+                            <?= e(t($recommendedMission['current_question'] ? 'Continuar' : 'Iniciar')) ?> <?= e($recommendedMission['title']) ?>
+                        </a>
+                    <?php else: ?>
+                        <a class="btn small" href="missoes.php"><?= e(t('Revisitar missões')) ?></a>
+                    <?php endif; ?>
+                </div>
+                <div class="dashboard-mission-stats">
+                    <span><strong><?= e((string)$missionSummary['completed_missions']) ?>/<?= e((string)$missionSummary['total_missions']) ?></strong> <?= e(t('missões concluídas')) ?></span>
+                    <span><strong><?= e((string)$missionSummary['total_missions'] - (int)$missionSummary['completed_missions']) ?></strong> <?= e(t('disponíveis')) ?></span>
+                    <span><strong><?= e((string)$missionSummary['mission_stars']) ?> ⭐</strong> <?= e(t('conquistadas')) ?></span>
+                </div>
+            </section>
+            <h2><?= e(t('Jogos')) ?></h2>
             <div class="grid">
                 <a class="game card" href="jogo.php?game=operacoes"><span>➕</span>
-                    <h3>Operações</h3>
-                    <p>Adição, subtração e multiplicação</p>
+                    <h3><?= e(t('Operações')) ?></h3>
+                    <p><?= e(t('Adição, subtração e multiplicação')) ?></p>
                 </a>
                 <a class="game card" href="jogo.php?game=fracoes"><span>🍕</span>
-                    <h3>Frações</h3>
-                    <p>Frações e proporções</p>
+                    <h3><?= e(t('Frações')) ?></h3>
+                    <p><?= e(t('Frações e proporções')) ?></p>
                 </a>
                 <a class="game card" href="jogo.php?game=equacoes"><span>⚖️</span>
-                    <h3>Equações</h3>
-                    <p>Descubra o X</p>
+                    <h3><?= e(t('Equações')) ?></h3>
+                    <p><?= e(t('Descubra o X')) ?></p>
                 </a>
                 <a class="game card" href="jogo.php?game=geometria"><span>📐</span>
-                    <h3>Geometria</h3>
-                    <p>Área e perímetro</p>
+                    <h3><?= e(t('Geometria')) ?></h3>
+                    <p><?= e(t('Área e perímetro')) ?></p>
                 </a>
             </div>
-            <h2>📚 Tarefas</h2>
+            <h2><?= e(t('Tarefas')) ?></h2>
             <div class="activity-list">
                 <?php foreach ($acts as $a):
                     $statusClass = 'status-red';
@@ -84,29 +155,29 @@ if ($u['role'] === 'aluno') {
                 ?>
                     <article class="card task-card">
                         <div class="task-head">
-                            <span class="tag"><?= e($a['difficulty']) ?></span>
+                            <span class="tag"><?= e(t($a['difficulty'])) ?></span>
                             <span class="status-badge <?= $statusClass ?>">
                                 <span class="status-dot"></span>
-                                <?= $statusLabel ?>
+                                <?= e(t($statusLabel)) ?>
                             </span>
                         </div>
                         <h3><?= e($a['title']) ?></h3>
-                        <p><?= nl2br(e($a['description'])) ?></p><small>Professor: <?= e($a['professor']) ?><?php if ($a['due_date']): ?> • Entrega: <?= e($a['due_date']) ?><?php endif; ?></small>
-                        <div class="actions"><a class="btn" href="atividade.php?id=<?= $a['id'] ?>">Abrir tarefa</a></div>
+                        <p lang="pt-BR"><?= nl2br(e($a['description'])) ?></p><small><?= e(t('Professor:')) ?> <?= e($a['professor']) ?><?php if ($a['due_date']): ?> • <?= e(t('Entrega:')) ?> <?= e($a['due_date']) ?><?php endif; ?></small>
+                        <div class="actions"><a class="btn" href="atividade.php?id=<?= $a['id'] ?>"><?= e(t('Abrir tarefa')) ?></a></div>
                     </article>
                 <?php endforeach; ?>
                 <?php if (!$acts): ?>
-                    <div class="card">Nenhuma tarefa publicada.</div>
+                    <div class="card"><?= e(t('Nenhuma tarefa publicada.')) ?></div>
                 <?php endif; ?>
             </div>
-            <h2>📈 Histórico</h2>
+            <h2><?= e(t('Histórico')) ?></h2>
             <div class="card table-wrap">
                 <table>
                     <tr>
-                        <th>Jogo</th>
-                        <th>Nível</th>
-                        <th>Pontos</th>
-                        <th>Acertos</th>
+                        <th><?= e(t('Jogo')) ?></th>
+                        <th><?= e(t('Nível')) ?></th>
+                        <th><?= e(t('Pontos')) ?></th>
+                        <th><?= e(t('Acertos')) ?></th>
                     </tr><?php foreach ($res as $r): ?><tr>
                             <td><?= e($r['game']) ?></td>
                             <td><?= e($r['difficulty']) ?></td>
@@ -115,9 +186,9 @@ if ($u['role'] === 'aluno') {
                         </tr><?php endforeach; ?>
                 </table>
             </div>
-        <?php else: ?><div class="card">
-                <h2>👩‍🏫 Área do professor</h2>
-                <p>Publique atividades e acompanhe os resultados dos alunos.</p><a class="btn" href="professor/">Abrir painel</a>
+        <?php else: ?><div class="card teacher-dashboard-card">
+                <h2><?= e(t('Área do professor')) ?></h2>
+                <p><?= e(t('Publique atividades e acompanhe os resultados dos alunos.')) ?></p><a class="btn" href="professor/"><?= e(t('Abrir painel')) ?></a>
             </div><?php endif; ?>
     </main>
 </body>

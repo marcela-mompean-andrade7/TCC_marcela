@@ -15,7 +15,7 @@ try {
         PDO::ATTR_EMULATE_PREPARES => false
     ]);
 } catch (PDOException $e) {
-    exit('Erro ao conectar ao banco. Confira o XAMPP e o banco mathup.');
+    exit('Erro ao conectar ao banco. Confira o MySQL e o banco mathplay.');
 }
 
 $pdo->exec(
@@ -57,6 +57,86 @@ $pdo->exec(
     )'
 );
 
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS avatars(
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        slug VARCHAR(80) NOT NULL UNIQUE,
+        name VARCHAR(100) NOT NULL,
+        description VARCHAR(255) NOT NULL,
+        icon VARCHAR(20) NOT NULL,
+        image_path VARCHAR(255) NOT NULL,
+        price INT UNSIGNED NOT NULL DEFAULT 0,
+        display_order INT UNSIGNED NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )'
+);
+
+$imagePathColumn = $pdo->query("SHOW COLUMNS FROM avatars LIKE 'image_path'")->fetch();
+if (!$imagePathColumn) {
+    $pdo->exec("ALTER TABLE avatars ADD COLUMN image_path VARCHAR(255) NOT NULL DEFAULT '' AFTER icon");
+}
+
+$rarityColumn = $pdo->query("SHOW COLUMNS FROM avatars LIKE 'rarity'")->fetch();
+if (!$rarityColumn) {
+    $pdo->exec("ALTER TABLE avatars ADD COLUMN rarity VARCHAR(20) NOT NULL DEFAULT 'comum' AFTER price");
+}
+
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS student_avatars(
+        student_id INT UNSIGNED NOT NULL,
+        avatar_id INT UNSIGNED NOT NULL,
+        acquired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY(student_id, avatar_id),
+        FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY(avatar_id) REFERENCES avatars(id) ON DELETE CASCADE
+    )'
+);
+
+$pdo->exec(
+    'CREATE TABLE IF NOT EXISTS student_avatar_selection(
+        student_id INT UNSIGNED NOT NULL PRIMARY KEY,
+        avatar_id INT UNSIGNED NOT NULL,
+        selected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY(student_id, avatar_id) REFERENCES student_avatars(student_id, avatar_id) ON DELETE CASCADE
+    )'
+);
+
+function seed_default_avatars(PDO $pdo): void
+{
+    $avatars = [
+        ['guardiao-lunar', 'Luna — Guardiã Lunar', 'Acolhedora e misteriosa, Luna guia os primeiros passos da jornada matemática.', '🌙', 'assets/avatars/luna.svg', 0, 'comum', 1],
+        ['explorador-espacial', 'Astrion — Explorador Cósmico', 'Curioso e destemido, Astrion transforma cada desafio em uma nova descoberta.', '🚀', 'assets/avatars/astrion.svg', 150, 'comum', 2],
+        ['guardiao-das-estrelas', 'Aurea — Maga Dourada', 'Sábia e luminosa, Aurea revela o conhecimento escondido nas estrelas.', '✨', 'assets/avatars/aurea.svg', 300, 'raro', 3],
+        ['viajante-dos-planetas', 'Nébula — Guardiã das Estrelas', 'Criativa e imaginativa, Nébula protege os sonhos que iluminam a galáxia.', '💜', 'assets/avatars/nebula.svg', 450, 'epico', 4],
+        ['astronauta-matematico', 'Orion — Mestre das Constelações', 'Estrategista experiente, Orion encontra padrões e soluções no céu noturno.', '🌌', 'assets/avatars/orion.svg', 650, 'epico', 5],
+        ['mago-cosmico', 'Solarius — Guardião Solar', 'Dedicado e radiante, Solarius representa a força de quem nunca para de evoluir.', '☀️', 'assets/avatars/solarius.svg', 900, 'epico', 6],
+        ['mestre-lunaris', 'Galaxia — Lenda Lunaris', 'Uma lenda que une luz, coragem e sabedoria para alcançar grandes objetivos.', '👑', 'assets/avatars/galaxia.svg', 1500, 'lendario', 7],
+        ['cometa', 'Cometa — Mensageiro Estelar', 'Veloz e otimista, Cometa cruza a galáxia deixando trilhas de luz azul.', '☄️', 'assets/avatars/cometa.svg', 200, 'comum', 8],
+        ['cosmo', 'Cosmo — Inventor Galáctico', 'Inventivo e curioso, Cosmo transforma sucata espacial em engenhocas brilhantes.', '⚙️', 'assets/avatars/cosmo.svg', 250, 'comum', 9],
+        ['selene', 'Selene — Princesa do Eclipse', 'Elegante e serena, Selene equilibra luz e sombra em cada descoberta.', '🌘', 'assets/avatars/selene.svg', 500, 'raro', 10],
+        ['estella', 'Estella — Arqueira Celeste', 'Precisa e corajosa, Estella mira alto guiada pelas estrelas.', '🏹', 'assets/avatars/estella.svg', 550, 'raro', 11],
+        ['atlas', 'Atlas — Viajante dos Planetas', 'Generoso e aventureiro, Atlas carrega mapas de mundos por explorar.', '🧭', 'assets/avatars/atlas.svg', 600, 'raro', 12],
+        ['draco', 'Draco — Cavaleiro Nebular', 'Leal e destemido, Draco protege a galáxia com sua armadura estelar.', '🐉', 'assets/avatars/draco.svg', 700, 'epico', 13],
+        ['vega', 'Vega — Dançarina das Estrelas', 'Expressiva e graciosa, Vega dança entre constelações cintilantes.', '💫', 'assets/avatars/vega.svg', 750, 'epico', 14],
+        ['iris', 'Íris — Oráculo Cósmico', 'Intuitiva e sábia, Íris lê caminhos possíveis em seus cristais cósmicos.', '🔮', 'assets/avatars/iris.svg', 800, 'epico', 15],
+        ['noctis', 'Noctis — Guardião da Noite', 'Tranquilo e protetor, Noctis ilumina os caminhos mais silenciosos.', '🌙', 'assets/avatars/noctis.svg', 850, 'epico', 16],
+        ['aurora', 'Aurora — Maga das Nebulosas', 'Criativa e gentil, Aurora tece cores de aurora em feitiços luminosos.', '🌈', 'assets/avatars/aurora.svg', 1000, 'epico', 17],
+        ['meteor', 'Meteor — Piloto Estelar', 'Audacioso e habilidoso, Meteor pilota sua nave por rotas desconhecidas.', '🛸', 'assets/avatars/meteor.svg', 1100, 'epico', 18],
+        ['lyra', 'Lyra — Cantora da Galáxia', 'Alegre e inspiradora, Lyra transforma melodias em poeira de estrelas.', '🎼', 'assets/avatars/lyra.svg', 1250, 'epico', 19],
+    ];
+
+    $stmt = $pdo->prepare('INSERT IGNORE INTO avatars(slug, name, description, icon, image_path, price, rarity, display_order) VALUES(?,?,?,?,?,?,?,?)');
+    $update = $pdo->prepare('UPDATE avatars SET name = ?, description = ?, icon = ?, image_path = ?, price = ?, rarity = ?, display_order = ? WHERE slug = ?');
+    foreach ($avatars as $avatar) {
+        $stmt->execute($avatar);
+        $update->execute([$avatar[1], $avatar[2], $avatar[3], $avatar[4], $avatar[5], $avatar[6], $avatar[7], $avatar[0]]);
+    }
+
+    $pdo->exec("UPDATE avatars SET display_order = 99 WHERE slug = 'explorador-das-galaxias'");
+}
+
+seed_default_avatars($pdo);
+
 function seed_default_planets(PDO $pdo): void
 {
     $count = (int)$pdo->query('SELECT COUNT(*) FROM planets')->fetchColumn();
@@ -96,10 +176,169 @@ function ensure_student_starter_planet(PDO $pdo, int $studentId): void
     $q->execute([$studentId, $planet['id']]);
 }
 
+function ensure_student_starter_avatar(PDO $pdo, int $studentId): void
+{
+    $q = $pdo->prepare('SELECT id FROM avatars WHERE slug = ? LIMIT 1');
+    $q->execute(['guardiao-lunar']);
+    $avatar = $q->fetch();
+
+    if (!$avatar) {
+        throw new RuntimeException('O avatar inicial não está cadastrado.');
+    }
+
+    $q = $pdo->prepare('INSERT IGNORE INTO student_avatars(student_id, avatar_id) VALUES(?, ?)');
+    $q->execute([$studentId, $avatar['id']]);
+
+    $q = $pdo->prepare('INSERT IGNORE INTO student_avatar_selection(student_id, avatar_id) VALUES(?, ?)');
+    $q->execute([$studentId, $avatar['id']]);
+}
+
 function e(?string $v): string
 {
     return htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
 }
+
+function current_language(): string
+{
+    $language = $_SESSION['lunaris_language'] ?? 'pt-BR';
+    return in_array($language, ['pt-BR', 'en', 'es'], true) ? $language : 'pt-BR';
+}
+
+function set_language(string $language): void
+{
+    if (in_array($language, ['pt-BR', 'en', 'es'], true)) {
+        $_SESSION['lunaris_language'] = $language;
+    }
+}
+
+function t(string $message): string
+{
+    static $translations = [];
+    $language = current_language();
+
+    if ($language === 'pt-BR') {
+        return $message;
+    }
+
+    if (!isset($translations[$language])) {
+        $translations[$language] = require __DIR__ . '/assets/i18n/' . $language . '.php';
+    }
+
+    return $translations[$language][$message] ?? $message;
+}
+
+function accessibility_status_options(): array
+{
+    return [
+        'prefer_not' => 'Prefiro não informar.',
+        'none' => 'Não possuo deficiência.',
+        'visual' => 'Deficiência visual.',
+        'hearing' => 'Deficiência auditiva.',
+        'mobility' => 'Deficiência física ou motora.',
+        'intellectual' => 'Deficiência intelectual.',
+        'psychosocial' => 'Deficiência psicossocial.',
+        'multiple' => 'Deficiência múltipla.',
+        'other' => 'Outra deficiência.',
+    ];
+}
+
+function color_vision_status_options(): array
+{
+    return [
+        'none' => 'Não possuo daltonismo.',
+        'protanopia' => 'Protanopia — dificuldade para perceber tons de vermelho.',
+        'deuteranopia' => 'Deuteranopia — dificuldade para distinguir determinadas tonalidades de vermelho e verde.',
+        'tritanopia' => 'Tritanopia — dificuldade para distinguir determinadas tonalidades de azul e amarelo.',
+        'other' => 'Outro tipo ou dificuldade relacionada à percepção das cores.',
+        'prefer_not' => 'Prefiro não informar.',
+    ];
+}
+
+function accessibility_resource_options(): array
+{
+    return [
+        'screen_reader' => 'Compatibilidade com leitores de tela.',
+        'larger_text' => 'Textos maiores.',
+        'largest_text' => 'Aumento adicional do texto.',
+        'high_contrast' => 'Alto contraste.',
+        'reduced_motion' => 'Reduzir animações e movimentos.',
+        'keyboard' => 'Navegação pelo teclado.',
+        'captions_visual' => 'Legendas e instruções visuais.',
+        'simple_instructions' => 'Instruções mais simples e organizadas.',
+        'other' => 'Outros recursos de acessibilidade.',
+        'color_vision' => 'Ajudar a distinguir informações apresentadas por cores.',
+    ];
+}
+
+function accessibility_palette_options(): array
+{
+    return [
+        'color_palette_blue_orange' => 'Azul e laranja',
+        'color_palette_purple_yellow' => 'Roxo e amarelo',
+    ];
+}
+
+function accessibility_preference_keys(): array
+{
+    return array_merge(array_keys(accessibility_resource_options()), array_keys(accessibility_palette_options()));
+}
+
+function normalize_accessibility_preferences(mixed $preferences): array
+{
+    if (is_string($preferences)) {
+        $decoded = json_decode($preferences, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log('Preferências de acessibilidade com JSON inválido.');
+            return [];
+        }
+        $preferences = $decoded;
+    }
+
+    if (!is_array($preferences)) {
+        return [];
+    }
+
+    $validPreferences = accessibility_preference_keys();
+    $normalized = array_values(array_unique(array_filter(
+        $preferences,
+        static fn($preference): bool => is_string($preference) && in_array($preference, $validPreferences, true)
+    )));
+
+    if (count($normalized) !== count($preferences)) {
+        error_log('Preferências de acessibilidade inválidas ou desconhecidas foram ignoradas.');
+    }
+
+    return $normalized;
+}
+
+function accessibility_html_attributes(): string
+{
+    $preferences = normalize_accessibility_preferences($_SESSION['lunaris_accessibility'] ?? []);
+    $attributes = 'data-accessibility-preferences="' . e(json_encode($preferences, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)) . '"';
+    $scriptDirectory = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+
+    if (basename($scriptDirectory) === 'professor') {
+        $scriptDirectory = dirname($scriptDirectory);
+    }
+
+    $attributes .= ' data-accessibility-endpoint="' . e(rtrim($scriptDirectory, '/') . '/accessibility_preferences.php') . '"';
+
+    if (!empty($_SESSION['user_id'])) {
+        $attributes .= ' data-accessibility-csrf="' . e(csrf()) . '"';
+    }
+
+    return $attributes;
+}
+
+function language_options(): array
+{
+    return [
+        'pt-BR' => 'Português (Brasil)',
+        'en' => 'English',
+        'es' => 'Español',
+    ];
+}
+
 function csrf(): string
 {
     if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
@@ -107,8 +346,11 @@ function csrf(): string
 }
 function check_csrf(): void
 {
-    if (!isset($_POST['csrf']) || !hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'])) {
-        http_response_code(419);
+    if (!isset($_POST['csrf'])
+        || !is_string($_POST['csrf'])
+        || !hash_equals((string)($_SESSION['csrf'] ?? ''), $_POST['csrf'])
+    ) {
+        http_response_code(403);
         exit('Requisição inválida.');
     }
 }
@@ -119,8 +361,20 @@ function login_required(): void
         exit;
     }
 
+    if (!isset($_SESSION['lunaris_preferences_loaded']) && ($GLOBALS['pdo'] ?? null) instanceof PDO) {
+        $preferencesQuery = $GLOBALS['pdo']->prepare('SELECT preferred_language, accessibility_needs FROM users WHERE id = ?');
+        $preferencesQuery->execute([$_SESSION['user_id']]);
+        $preferences = $preferencesQuery->fetch();
+        if ($preferences) {
+            set_language((string)($preferences['preferred_language'] ?: 'pt-BR'));
+            $_SESSION['lunaris_accessibility'] = normalize_accessibility_preferences($preferences['accessibility_needs'] ?? null);
+            $_SESSION['lunaris_preferences_loaded'] = true;
+        }
+    }
+
     if (($GLOBALS['pdo'] ?? null) instanceof PDO && ($_SESSION['role'] ?? '') === 'aluno') {
         ensure_student_starter_planet($GLOBALS['pdo'], (int)$_SESSION['user_id']);
+        ensure_student_starter_avatar($GLOBALS['pdo'], (int)$_SESSION['user_id']);
     }
 }
 function teacher_required(): void

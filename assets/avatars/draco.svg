@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Draco, Cavaleiro Nebular</title><desc id="desc">Cavaleiro amigável com armadura violeta, elmo com chifres de dragão e escudo estelar.</desc>
+  <defs><linearGradient id="armor" x2="1" y2="1"><stop stop-color="#6655b8"/><stop offset="1" stop-color="#3284a8"/></linearGradient></defs>
+  <g fill="#d9c4ff"><circle cx="42" cy="52" r="3"/><circle cx="139" cy="47" r="3"/><path d="m132 81 2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></g>
+  <path d="M25 201q6-46 40-61h50q34 15 40 61z" fill="url(#armor)" stroke="#3e3c83" stroke-width="4"/><path d="m66 144 24 27 24-27-9-10H75z" fill="#e7e9ff"/><path d="M57 70q3-34 33-38 33 4 34 41l-7 43q-8 20-27 22-23-4-30-27z" fill="#e3b89e"/><path d="M59 74q-7-37 31-48 37 9 36 49l-14-14-6-16-15 15-20-8z" fill="#413b72"/><path d="m62 48-16-21 26 7M116 34l18-18-5 35" fill="#6251a0" stroke="#38316e" stroke-width="4" stroke-linejoin="round"/><path d="M59 80q-9 32 11 53l-5-33zM120 80q11 33-9 53l5-33z" fill="#39356d"/>
+  <g fill="#37436d"><ellipse cx="80" cy="91" rx="2.7" ry="3.2"/><ellipse cx="101" cy="91" rx="2.7" ry="3.2"/></g><path d="M83 108q7 5 14 0" fill="none" stroke="#aa6875" stroke-width="2.5" stroke-linecap="round"/><path d="M90 153 108 160v15q-5 11-18 17-13-6-18-17v-15z" fill="#d7e4ff" stroke="#9e7bd0" stroke-width="3"/><path d="m90 160 3 7 7 2-6 5 2 7-6-4-6 4 2-7-6-5 7-2z" fill="#f5d975"/>
+</svg>

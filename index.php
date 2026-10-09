@@ -3,7 +3,7 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
 ?>
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
 
 <head>
     <meta charset="utf-8">

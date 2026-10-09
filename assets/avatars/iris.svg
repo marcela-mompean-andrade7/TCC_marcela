@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 210" role="img" aria-labelledby="title desc">
+  <title id="title">Íris, Oráculo Cósmico</title><desc id="desc">Oráculo de cabelo azul-lilás, manto violeta e cristal arco-íris luminoso.</desc>
+  <defs><linearGradient id="robe" x2="1"><stop stop-color="#6378c8"/><stop offset="1" stop-color="#9a69bb"/></linearGradient><linearGradient id="crystal" x2="1"><stop stop-color="#8ce0db"/><stop offset=".5" stop-color="#c7a0ec"/><stop offset="1" stop-color="#f3d68d"/></linearGradient></defs>
+  <g fill="#fff"><circle cx="41" cy="48" r="3"/><circle cx="139" cy="73" r="2.5"/><path d="m132 38 2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></g>
+  <path d="M22 201q5-48 39-63h58q34 15 39 63z" fill="url(#robe)" stroke="#5e539c" stroke-width="4"/><path d="m67 144 23 30 23-30-10-12H77z" fill="#f5eaff"/><path d="M57 72q2-37 33-42 34 3 36 43l-7 42q-7 21-29 23-23-4-30-28z" fill="#eac0ad"/><path d="M58 79q-7-44 34-52 35 4 39 43l-18-11-11-18-14 20-24 9z" fill="#7163b8"/><path d="M60 81q-13 35 10 55l-5-34zM120 81q14 35-10 55l6-34z" fill="#5367a9"/><path d="M66 47q25-27 53-7" fill="none" stroke="#9c8add" stroke-width="8" stroke-linecap="round"/>
+  <g fill="#493e72"><ellipse cx="80" cy="91" rx="2.6" ry="3.2"/><ellipse cx="101" cy="91" rx="2.6" ry="3.2"/></g><path d="M83 108q7 5 14 0" fill="none" stroke="#af6876" stroke-width="2.5" stroke-linecap="round"/><path d="m90 149 12 14-12 25-12-25z" fill="url(#crystal)" stroke="#fff0bd" stroke-width="3"/><path d="m90 151 0 33" stroke="#fff" stroke-width="2" opacity=".8"/>
+</svg>
