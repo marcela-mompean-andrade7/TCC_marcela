@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 $errors = [];
 $submittedNeeds = $_POST['accessibility_needs'] ?? [];
 if (!is_array($submittedNeeds)) {
@@ -110,8 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title><?= e(t('Criar conta')) ?> — Lunaris Academy</title>
-  <link rel="stylesheet" href="assets/style.css">
-  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+  <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>

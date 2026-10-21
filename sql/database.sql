@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS users(
 CREATE TABLE IF NOT EXISTS activities(
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  professor_id INT UNSIGNED NOT NULL,
+ target_school VARCHAR(180) NULL,
+ target_serie VARCHAR(40) NULL,
  title VARCHAR(160) NOT NULL,
  description TEXT NOT NULL,
  difficulty ENUM('facil','medio','dificil') NOT NULL DEFAULT 'facil',
@@ -37,6 +39,9 @@ CREATE TABLE IF NOT EXISTS questions(
  activity_id INT UNSIGNED NOT NULL,
  question_text TEXT NOT NULL,
  answer VARCHAR(120) NOT NULL,
+ first_number DECIMAL(16,6) NULL,
+ operation VARCHAR(16) NULL,
+ second_number DECIMAL(16,6) NULL,
  FOREIGN KEY(activity_id) REFERENCES activities(id) ON DELETE CASCADE
 );
 
@@ -50,6 +55,16 @@ CREATE TABLE IF NOT EXISTS submissions(
  UNIQUE KEY one_submission(activity_id,student_id),
  FOREIGN KEY(activity_id) REFERENCES activities(id) ON DELETE CASCADE,
  FOREIGN KEY(student_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS submission_answers(
+ submission_id INT UNSIGNED NOT NULL,
+ question_id INT UNSIGNED NOT NULL,
+ answer VARCHAR(120) NOT NULL,
+ is_correct TINYINT(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(submission_id,question_id),
+ FOREIGN KEY(submission_id) REFERENCES submissions(id) ON DELETE CASCADE,
+ FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS activity_progress(
@@ -257,7 +272,9 @@ VALUES
  ('noctis', 'Noctis — Guardião da Noite', 'Tranquilo e protetor, Noctis ilumina os caminhos mais silenciosos.', '🌙', 'assets/avatars/noctis.svg', 850, 'epico', 16),
  ('aurora', 'Aurora — Maga das Nebulosas', 'Criativa e gentil, Aurora tece cores de aurora em feitiços luminosos.', '🌈', 'assets/avatars/aurora.svg', 1000, 'epico', 17),
  ('meteor', 'Meteor — Piloto Estelar', 'Audacioso e habilidoso, Meteor pilota sua nave por rotas desconhecidas.', '🛸', 'assets/avatars/meteor.svg', 1100, 'epico', 18),
- ('lyra', 'Lyra — Cantora da Galáxia', 'Alegre e inspiradora, Lyra transforma melodias em poeira de estrelas.', '🎼', 'assets/avatars/lyra.svg', 1250, 'epico', 19)
+ ('lyra', 'Lyra — Cantora da Galáxia', 'Alegre e inspiradora, Lyra transforma melodias em poeira de estrelas.', '🎼', 'assets/avatars/lyra.svg', 1250, 'epico', 19),
+ ('sirius', 'Sirius', 'Personagem da coleção Lunaris.', '✨', 'assets/avatars/orion.svg', 1300, 'epico', 20),
+ ('zenith', 'Zenith', 'Personagem da coleção Lunaris.', '🌟', 'assets/avatars/galaxia.svg', 1400, 'epico', 21)
 ON DUPLICATE KEY UPDATE
  name = VALUES(name),
  description = VALUES(description),

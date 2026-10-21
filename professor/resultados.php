@@ -1,5 +1,5 @@
 <?php
-require '../config.php';
+require_once __DIR__ . '/../config.php';
 
 teacher_required();
 
@@ -149,15 +149,18 @@ $rows = $q->fetchAll();
         Resultados | Lunaris Academy
     </title>
 
-    <link rel="stylesheet" href="../assets/style.css">
-    <script src="../assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 
 </head>
 
 <body>
 
 <header class="nav teacher-create-nav">
-    <b>Lunaris Academy • Professor</b>
+    <a class="nav-brand teacher-nav-brand" href="../dashboard.php">
+        <img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">
+        Lunaris Academy <span>• Professor</span>
+    </a>
     <nav lang="<?= e(current_language()) ?>">
         <a href="index.php"><?= e(t('Minhas atividades')) ?></a>
         <a href="criar.php"><?= e(t('Nova atividade')) ?></a>
@@ -254,6 +257,17 @@ $rows = $q->fetchAll();
             <div>
                 <strong>Respostas</strong>
                 <p><?= count($rows) ?> aluno(s)</p>
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <span class="info-icon">🏫</span>
+
+            <div>
+                <strong>Escola e turma</strong>
+                <p><?= $a['target_school'] !== null && $a['target_serie'] !== null ? e($a['target_school'] . ' · ' . $a['target_serie']) : 'Atividade antiga sem destino definido' ?></p>
             </div>
 
         </div>

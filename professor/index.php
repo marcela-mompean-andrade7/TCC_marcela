@@ -1,5 +1,5 @@
 <?php
-require '../config.php';
+require_once __DIR__ . '/../config.php';
 teacher_required();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_activity'])) {
@@ -26,12 +26,16 @@ $acts = $q->fetchAll();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Painel do Professor</title>
-    <link rel="stylesheet" href="../assets/style.css">
-    <script src="../assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
-    <header class="nav"><b>MathUp • Professor</b>
+    <header class="nav teacher-create-nav">
+        <a class="nav-brand teacher-nav-brand" href="../dashboard.php">
+            <img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">
+            Lunaris Academy <span>• Professor</span>
+        </a>
         <nav lang="<?= e(current_language()) ?>"><a href="../dashboard.php"><?= e(t('Painel')) ?></a><a href="criar.php"><?= e(t('Nova atividade')) ?></a><a href="../logout.php"><?= e(t('Sair')) ?></a></nav>
     </header>
     <main class="container teacher-panel">
@@ -44,6 +48,9 @@ $acts = $q->fetchAll();
         </div>
 
         <div class="activity-list">
+            <?php if (isset($_GET['publicada'])): ?>
+                <div class="success-message" role="status">Atividade publicada e direcionada à turma selecionada.</div>
+            <?php endif; ?>
             <?php foreach ($acts as $a): ?>
                 <article class="card activity-item">
                     <div class="activity-head">
@@ -53,6 +60,11 @@ $acts = $q->fetchAll();
 
                     <h2><?= e($a['title']) ?></h2>
                     <p><?= nl2br(e($a['description'])) ?></p>
+                    <?php if ($a['target_school'] !== null && $a['target_serie'] !== null): ?>
+                        <small>Destino: <?= e($a['target_school']) ?> · <?= e($a['target_serie']) ?></small>
+                    <?php else: ?>
+                        <small>Atividade antiga sem turma de destino definida</small>
+                    <?php endif; ?>
                     <small><?php if ($a['due_date']): ?>Entrega: <?= e($a['due_date']) ?><?php endif; ?></small>
 
                     <div class="activity-actions">

@@ -74,7 +74,9 @@ INSERT INTO avatars(slug, name, description, icon, image_path, price, rarity, di
  ('noctis', 'Noctis — Guardião da Noite', 'Tranquilo e protetor, Noctis ilumina os caminhos mais silenciosos.', '🌙', 'assets/avatars/noctis.svg', 850, 'epico', 16),
  ('aurora', 'Aurora — Maga das Nebulosas', 'Criativa e gentil, Aurora tece cores de aurora em feitiços luminosos.', '🌈', 'assets/avatars/aurora.svg', 1000, 'epico', 17),
  ('meteor', 'Meteor — Piloto Estelar', 'Audacioso e habilidoso, Meteor pilota sua nave por rotas desconhecidas.', '🛸', 'assets/avatars/meteor.svg', 1100, 'epico', 18),
- ('lyra', 'Lyra — Cantora da Galáxia', 'Alegre e inspiradora, Lyra transforma melodias em poeira de estrelas.', '🎼', 'assets/avatars/lyra.svg', 1250, 'epico', 19)
+ ('lyra', 'Lyra — Cantora da Galáxia', 'Alegre e inspiradora, Lyra transforma melodias em poeira de estrelas.', '🎼', 'assets/avatars/lyra.svg', 1250, 'epico', 19),
+ ('sirius', 'Sirius', 'Personagem da coleção Lunaris.', '✨', 'assets/avatars/orion.svg', 1300, 'epico', 20),
+ ('zenith', 'Zenith', 'Personagem da coleção Lunaris.', '🌟', 'assets/avatars/galaxia.svg', 1400, 'epico', 21)
 ON DUPLICATE KEY UPDATE
  name = VALUES(name),
  description = VALUES(description),

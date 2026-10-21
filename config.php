@@ -32,6 +32,110 @@ $pdo->exec(
     )'
 );
 
+function ensure_activity_targeting_schema(PDO $pdo): void
+{
+    $activityColumns = array_column($pdo->query('SHOW COLUMNS FROM activities')->fetchAll(), 'Field');
+    if (!in_array('target_school', $activityColumns, true)) {
+        $pdo->exec('ALTER TABLE activities ADD COLUMN target_school VARCHAR(180) NULL AFTER professor_id');
+    }
+    if (!in_array('target_serie', $activityColumns, true)) {
+        $pdo->exec('ALTER TABLE activities ADD COLUMN target_serie VARCHAR(40) NULL AFTER target_school');
+    }
+
+    $questionColumns = array_column($pdo->query('SHOW COLUMNS FROM questions')->fetchAll(), 'Field');
+    foreach ([
+        'first_number' => 'DECIMAL(16,6) NULL',
+        'operation' => 'VARCHAR(16) NULL',
+        'second_number' => 'DECIMAL(16,6) NULL',
+    ] as $column => $definition) {
+        if (!in_array($column, $questionColumns, true)) {
+            $pdo->exec("ALTER TABLE questions ADD COLUMN $column $definition");
+        }
+    }
+
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS submission_answers(
+            submission_id INT UNSIGNED NOT NULL,
+            question_id INT UNSIGNED NOT NULL,
+            answer VARCHAR(120) NOT NULL,
+            is_correct TINYINT(1) NOT NULL DEFAULT 0,
+            PRIMARY KEY(submission_id, question_id),
+            FOREIGN KEY(submission_id) REFERENCES submissions(id) ON DELETE CASCADE,
+            FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
+        )'
+    );
+}
+
+ensure_activity_targeting_schema($pdo);
+
+function registered_student_destinations(PDO $pdo): array
+{
+    $rows = $pdo->query(
+        "SELECT DISTINCT escola, serie
+         FROM users
+         WHERE role = 'aluno' AND escola <> '' AND serie IS NOT NULL
+         ORDER BY escola, serie"
+    )->fetchAll();
+    $destinations = [];
+    foreach ($rows as $row) {
+        $destinations[$row['escola']][] = $row['serie'];
+    }
+    return $destinations;
+}
+
+function parse_activity_decimal(mixed $value): ?float
+{
+    if (!is_string($value) || !preg_match('/^-?\d{1,9}(?:[.,]\d{1,6})?$/D', trim($value))) {
+        return null;
+    }
+    $number = (float)str_replace(',', '.', trim($value));
+    return is_finite($number) ? $number : null;
+}
+
+function format_activity_decimal(float $number): string
+{
+    $formatted = number_format(round($number, 6, PHP_ROUND_HALF_UP), 6, '.', '');
+    $formatted = rtrim(rtrim($formatted, '0'), '.');
+    return $formatted === '-0' || $formatted === '' ? '0' : $formatted;
+}
+
+function calculate_activity_result(float $first, string $operation, float $second): ?float
+{
+    $result = match ($operation) {
+        'addition' => $first + $second,
+        'subtraction' => $first - $second,
+        'multiplication' => $first * $second,
+        'division' => $second === 0.0 ? null : $first / $second,
+        default => null,
+    };
+    return $result !== null && is_finite($result) && abs($result) <= 999999999.999999
+        ? round($result, 6, PHP_ROUND_HALF_UP)
+        : null;
+}
+
+function activity_math_answers_match(string $given, string $expected): bool
+{
+    $givenNumber = parse_activity_decimal($given);
+    $expectedNumber = parse_activity_decimal($expected);
+    return $givenNumber !== null
+        && $expectedNumber !== null
+        && abs(round($givenNumber, 6) - round($expectedNumber, 6)) < 0.0000005;
+}
+
+function student_can_access_activity(PDO $pdo, int $activityId, int $studentId): bool
+{
+    $query = $pdo->prepare(
+        "SELECT a.id
+         FROM activities a
+         JOIN users student ON student.id = ? AND student.role = 'aluno'
+         WHERE a.id = ?
+           AND (a.target_school IS NULL OR (a.target_school = student.escola AND a.target_serie = student.serie))
+           AND (a.due_date IS NULL OR a.due_date >= CURRENT_DATE)"
+    );
+    $query->execute([$studentId, $activityId]);
+    return (bool)$query->fetchColumn();
+}
+
 $pdo->exec(
     'CREATE TABLE IF NOT EXISTS planets(
         id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -123,6 +227,8 @@ function seed_default_avatars(PDO $pdo): void
         ['aurora', 'Aurora — Maga das Nebulosas', 'Criativa e gentil, Aurora tece cores de aurora em feitiços luminosos.', '🌈', 'assets/avatars/aurora.svg', 1000, 'epico', 17],
         ['meteor', 'Meteor — Piloto Estelar', 'Audacioso e habilidoso, Meteor pilota sua nave por rotas desconhecidas.', '🛸', 'assets/avatars/meteor.svg', 1100, 'epico', 18],
         ['lyra', 'Lyra — Cantora da Galáxia', 'Alegre e inspiradora, Lyra transforma melodias em poeira de estrelas.', '🎼', 'assets/avatars/lyra.svg', 1250, 'epico', 19],
+        ['sirius', 'Sirius', 'Personagem da coleção Lunaris.', '✨', 'assets/avatars/orion.svg', 1300, 'epico', 20],
+        ['zenith', 'Zenith', 'Personagem da coleção Lunaris.', '🌟', 'assets/avatars/galaxia.svg', 1400, 'epico', 21],
     ];
 
     $stmt = $pdo->prepare('INSERT IGNORE INTO avatars(slug, name, description, icon, image_path, price, rarity, display_order) VALUES(?,?,?,?,?,?,?,?)');
@@ -136,6 +242,51 @@ function seed_default_avatars(PDO $pdo): void
 }
 
 seed_default_avatars($pdo);
+
+function avatar_character_images(string $slug): array
+{
+    static $images = [
+        'guardiao-lunar' => ['profile' => 'imagens/avatars-transparent/luna_perfil.png', 'full' => 'imagens/luna.jpg'],
+        'explorador-espacial' => ['profile' => 'imagens/avatars-transparent/astrion_perfil.png', 'full' => 'imagens/astrion.jpg'],
+        'guardiao-das-estrelas' => ['profile' => 'imagens/avatars-transparent/aurea_perfil.png', 'full' => 'imagens/aurea.jpg'],
+        'viajante-dos-planetas' => ['profile' => 'imagens/avatars-transparent/nebula_perfil.png', 'full' => 'imagens/nebula.jpg'],
+        'astronauta-matematico' => ['profile' => 'imagens/avatars-transparent/orion_perfil.png', 'full' => 'imagens/orion.jpg'],
+        'mago-cosmico' => ['profile' => 'imagens/avatars-transparent/solarius_perfil.png', 'full' => 'imagens/solarius.jpg'],
+        'mestre-lunaris' => ['profile' => 'imagens/avatars-transparent/galaxia_perfil.png', 'full' => 'imagens/galaxia.jpg'],
+        'cometa' => ['profile' => 'imagens/avatars-transparent/cometa_perfil.png', 'full' => 'imagens/cometa.jpg'],
+        'cosmo' => ['profile' => 'imagens/avatars-transparent/cosmo_perfil.png', 'full' => 'imagens/cosmo.jpg'],
+        'selene' => ['profile' => 'imagens/avatars-transparent/selene_perfil.png', 'full' => 'imagens/selene.jpg'],
+        'estella' => ['profile' => 'imagens/avatars-transparent/estella_perfil.png', 'full' => 'imagens/estella.jpg'],
+        'atlas' => ['profile' => 'imagens/avatars-transparent/atlas_perfil.png', 'full' => 'imagens/atlas.jpg'],
+        'draco' => ['profile' => 'imagens/avatars-transparent/draco_perfil.png', 'full' => 'imagens/draco.jpg'],
+        'vega' => ['profile' => 'imagens/avatars-transparent/vega_perfil.png', 'full' => 'imagens/vega.jpg'],
+        'iris' => ['profile' => 'imagens/avatars-transparent/iris_pefil.png', 'full' => 'imagens/iris.jpg'],
+        'noctis' => ['profile' => 'imagens/avatars-transparent/noctis_perfil.png', 'full' => 'imagens/noctis.jpg'],
+        'aurora' => ['profile' => 'imagens/avatars-transparent/auror_perfil.png', 'full' => 'imagens/aurora.jpg'],
+        'meteor' => ['profile' => 'imagens/avatars-transparent/meteor_perfil.png', 'full' => 'imagens/meteor.jpg'],
+        'lyra' => ['profile' => 'imagens/avatars-transparent/lyra_perfil.png', 'full' => 'imagens/lyra.jpg'],
+        'sirius' => ['profile' => 'imagens/avatars-transparent/sirius_perfil.png', 'full' => 'imagens/sirius.jpg'],
+        'zenith' => ['profile' => 'imagens/avatars-transparent/zenith_perfil.png', 'full' => 'imagens/zenith.jpg'],
+    ];
+
+    if (!isset($images[$slug])) {
+        return ['profile' => null, 'full' => null];
+    }
+
+    $paths = [];
+    foreach ($images[$slug] as $type => $relativePath) {
+        $absolutePath = __DIR__ . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+        $paths[$type] = is_file($absolutePath) ? $relativePath : null;
+    }
+
+    return $paths;
+}
+
+function avatar_profile_image(array $avatar): string
+{
+    $images = avatar_character_images((string)($avatar['slug'] ?? ''));
+    return $images['profile'] ?? ((string)($avatar['image_path'] ?? '') ?: 'assets/avatars/galaxia.svg');
+}
 
 function seed_default_planets(PDO $pdo): void
 {
@@ -280,7 +431,11 @@ function accessibility_palette_options(): array
 
 function accessibility_preference_keys(): array
 {
-    return array_merge(array_keys(accessibility_resource_options()), array_keys(accessibility_palette_options()));
+    return array_merge(
+        array_keys(accessibility_resource_options()),
+        array_keys(accessibility_palette_options()),
+        ['readable_text', 'accessible_font']
+    );
 }
 
 function normalize_accessibility_preferences(mixed $preferences): array
@@ -311,17 +466,25 @@ function normalize_accessibility_preferences(mixed $preferences): array
     return $normalized;
 }
 
+function application_base_path(): string
+{
+    $scriptDirectory = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+    if (basename($scriptDirectory) === 'professor') {
+        $scriptDirectory = dirname($scriptDirectory);
+    }
+    return rtrim($scriptDirectory, '/');
+}
+
+function application_asset_url(string $path): string
+{
+    return application_base_path() . '/' . ltrim($path, '/');
+}
+
 function accessibility_html_attributes(): string
 {
     $preferences = normalize_accessibility_preferences($_SESSION['lunaris_accessibility'] ?? []);
     $attributes = 'data-accessibility-preferences="' . e(json_encode($preferences, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)) . '"';
-    $scriptDirectory = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
-
-    if (basename($scriptDirectory) === 'professor') {
-        $scriptDirectory = dirname($scriptDirectory);
-    }
-
-    $attributes .= ' data-accessibility-endpoint="' . e(rtrim($scriptDirectory, '/') . '/accessibility_preferences.php') . '"';
+    $attributes .= ' data-accessibility-endpoint="' . e(application_base_path() . '/accessibility_preferences.php') . '"';
 
     if (!empty($_SESSION['user_id'])) {
         $attributes .= ' data-accessibility-csrf="' . e(csrf()) . '"';
@@ -357,7 +520,7 @@ function check_csrf(): void
 function login_required(): void
 {
     if (empty($_SESSION['user_id'])) {
-        header('Location: login.php');
+        header('Location: ' . application_base_path() . '/login.php');
         exit;
     }
 

@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 login_required();
 $q = $pdo->prepare('SELECT * FROM users WHERE id=?');
 $q->execute([$_SESSION['user_id']]);
@@ -11,8 +11,10 @@ if ($u['role'] === 'aluno') {
                         FROM activities a
                         JOIN users u ON u.id=a.professor_id
                         LEFT JOIN submissions s ON s.activity_id=a.id AND s.student_id=?
+                        WHERE (a.target_school IS NULL OR (a.target_school = ? AND a.target_serie = ?))
+                          AND (a.due_date IS NULL OR a.due_date >= CURRENT_DATE)
                         ORDER BY a.created_at DESC LIMIT 12");
-    $q->execute([$u['id'], $u['id']]);
+    $q->execute([$u['id'], $u['id'], $u['escola'], $u['serie']]);
     $acts = $q->fetchAll();
 } else {
     $acts = $pdo->query("SELECT a.*,u.name professor FROM activities a JOIN users u ON u.id=a.professor_id ORDER BY a.created_at DESC LIMIT 12")->fetchAll();
@@ -27,9 +29,12 @@ if ($u['role'] === 'aluno') {
     $q->execute([$u['id']]);
     $res = $q->fetchAll();
 
-    $q = $pdo->prepare('SELECT a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
+    $q = $pdo->prepare('SELECT a.slug, a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
     $q->execute([$u['id']]);
     $currentAvatar = $q->fetch();
+    if ($currentAvatar) {
+        $currentAvatar['profile_image_path'] = avatar_profile_image($currentAvatar);
+    }
 
     $q = $pdo->prepare(
         'SELECT COUNT(*) AS total_missions,
@@ -65,13 +70,13 @@ if ($u['role'] === 'aluno') {
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#F5F7FF">
     <title><?= e(t('Painel')) ?> — Lunaris Academy</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
     <header class="nav">
-        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <a class="nav-brand" href="dashboard.php"><img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">Lunaris Academy</a>
         <nav lang="<?= e(current_language()) ?>">
             <span><?= e($u['name']) ?></span>
             <a href="dashboard.php" aria-current="page"><?= e(t('Painel')) ?></a>
@@ -90,7 +95,7 @@ if ($u['role'] === 'aluno') {
         <div class="welcome">
             <div class="welcome-copy"><span class="tag"><?= e(t($u['role'])) ?></span>
                 <div class="welcome-title">
-                    <?php if ($currentAvatar): ?><img class="welcome-avatar-image" src="<?= e(($currentAvatar['image_path'] ?? '') ?: 'assets/avatars/galaxia.svg') ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="54" height="54"><?php endif; ?>
+                    <?php if ($currentAvatar): ?><img class="welcome-avatar-image" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="54" height="54"><?php endif; ?>
                     <h1><?= e(t('Olá,')) ?> <?= e($u['name']) ?>!</h1>
                 </div>
                 <p><?= e($u['escola']) ?> • <?= e(t($u['regiao'])) ?><?php if ($u['serie']): ?> • <?= e(t($u['serie'])) ?><?php endif; ?></p>

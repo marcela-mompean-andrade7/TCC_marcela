@@ -1,4 +1,4 @@
-<?php require 'config.php';
+<?php require_once __DIR__ . '/config.php';
 if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
 ?>
 
@@ -11,15 +11,15 @@ if (!empty($_SESSION['user_id'])) redirect('dashboard.php');
     <meta name="description" content="Lunaris Academy - Aprenda matemática jogando e superando desafios pela galáxia">
     <meta name="theme-color" content="#050817">
     <title>Lunaris Academy - Matemática Gamificada</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
     <!-- NAVIGATION BAR -->
     <nav class="navbar">
         <a href="index.php" class="logo" aria-label="Lunaris Academy">
-            <img src="logo.png" alt="Logo Lunaris">
+            <img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="Logo Lunaris">
             <b>Lunaris</b>
         </a>
         <div class="nav-links">

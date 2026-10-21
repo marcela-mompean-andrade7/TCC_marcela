@@ -1,5 +1,5 @@
 <?php
-require '../config.php';
+require_once __DIR__ . '/../config.php';
 teacher_required();
 $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
 $q = $pdo->prepare('SELECT * FROM activities WHERE id=? AND professor_id=?');
@@ -27,13 +27,16 @@ $questions = $q->fetchAll();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Questões da atividade — Lunaris Academy</title>
-    <link rel="stylesheet" href="../assets/style.css">
-    <script src="../assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
     <header class="nav teacher-create-nav">
-        <b>Lunaris Academy • Professor</b>
+        <a class="nav-brand teacher-nav-brand" href="../dashboard.php">
+            <img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">
+            Lunaris Academy <span>• Professor</span>
+        </a>
         <nav lang="<?= e(current_language()) ?>">
             <a href="index.php"><?= e(t('Minhas atividades')) ?></a>
             <a href="criar.php"><?= e(t('Nova atividade')) ?></a>

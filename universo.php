@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 login_required();
 
 if (($_SESSION['role'] ?? '') !== 'aluno') {
@@ -7,9 +7,12 @@ if (($_SESSION['role'] ?? '') !== 'aluno') {
 }
 
 $studentId = (int)$_SESSION['user_id'];
-$q = $pdo->prepare('SELECT a.name AS avatar_name, a.icon, a.image_path, u.name AS student_name FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id JOIN users u ON u.id = s.student_id WHERE s.student_id = ?');
+$q = $pdo->prepare('SELECT a.slug, a.name AS avatar_name, a.icon, a.image_path, u.name AS student_name FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id JOIN users u ON u.id = s.student_id WHERE s.student_id = ?');
 $q->execute([$studentId]);
 $avatar = $q->fetch();
+if ($avatar) {
+    $avatar['profile_image_path'] = avatar_profile_image($avatar);
+}
 
 $q = $pdo->prepare('SELECT COUNT(*) FROM student_planets WHERE student_id = ?');
 $q->execute([$studentId]);
@@ -33,20 +36,20 @@ $missionCount = (int)$q->fetchColumn();
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#F5F7FF">
     <title>Universo Lunaris</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
     <header class="nav">
-        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <a class="nav-brand" href="dashboard.php"><img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">Lunaris Academy</a>
         <nav lang="<?= e(current_language()) ?>">
             <a href="dashboard.php"><?= e(t('Painel')) ?></a>
-            <a href="universo.php" aria-current="page">🌌 <?= e(t('Universo')) ?></a>
-            <a href="missoes.php">🚀 <?= e(t('Missões')) ?></a>
-            <a href="planetas.php">🪐 <?= e(t('Planetas')) ?></a>
-            <a href="avatares.php">🎭 <?= e(t('Avatares')) ?></a>
-            <a href="perfil.php">🏅 <?= e(t('Perfil')) ?></a>
+            <a href="universo.php" aria-current="page"> <?= e(t('Universo')) ?></a>
+            <a href="missoes.php"> <?= e(t('Missões')) ?></a>
+            <a href="planetas.php"> <?= e(t('Planetas')) ?></a>
+            <a href="avatares.php"> <?= e(t('Avatares')) ?></a>
+            <a href="perfil.php"> <?= e(t('Perfil')) ?></a>
             <a href="logout.php"><?= e(t('Sair')) ?></a>
         </nav>
     </header>
@@ -54,7 +57,7 @@ $missionCount = (int)$q->fetchColumn();
     <main class="container narrow universe-page">
         <section class="universe-shell">
             <div class="universe-hero">
-                <img class="universe-hero-icon universe-hero-portrait" src="<?= e(($avatar['image_path'] ?? '') ?: 'assets/avatars/luna.svg') ?>" alt="Avatar atual: <?= e($avatar['avatar_name'] ?? 'Luna — Guardiã Lunar') ?>" width="112" height="130">
+                <img class="universe-hero-icon universe-hero-portrait" src="<?= e($avatar['profile_image_path'] ?? 'assets/avatars/luna.svg') ?>" alt="Avatar atual: <?= e($avatar['avatar_name'] ?? 'Luna — Guardiã Lunar') ?>" width="112" height="130">
                 <div>
                     <span class="tag">🌌 Universo Lunaris</span>
                     <h1>Sua jornada continua, <?= e($avatar['student_name'] ?? 'explorador') ?>!</h1>

@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 login_required();
 
 if (($_SESSION['role'] ?? '') !== 'aluno') {
@@ -91,20 +91,20 @@ $planets = $q->fetchAll();
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#F5F7FF">
     <title>Planetas</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
     <header class="nav">
-        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <a class="nav-brand" href="dashboard.php"><img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">Lunaris Academy</a>
         <nav lang="<?= e(current_language()) ?>">
             <a href="dashboard.php"><?= e(t('Painel')) ?></a>
-            <a href="universo.php">🌌 <?= e(t('Universo')) ?></a>
-            <a href="missoes.php">🚀 <?= e(t('Missões')) ?></a>
-            <a href="planetas.php" aria-current="page">🪐 <?= e(t('Planetas')) ?></a>
-            <a href="avatares.php">🎭 <?= e(t('Avatares')) ?></a>
-            <a href="perfil.php">🏅 <?= e(t('Perfil')) ?></a>
+            <a href="universo.php"> <?= e(t('Universo')) ?></a>
+            <a href="missoes.php"> <?= e(t('Missões')) ?></a>
+            <a href="planetas.php" aria-current="page"> <?= e(t('Planetas')) ?></a>
+            <a href="avatares.php"> <?= e(t('Avatares')) ?></a>
+            <a href="perfil.php"> <?= e(t('Perfil')) ?></a>
             <a href="logout.php"><?= e(t('Sair')) ?></a>
         </nav>
     </header>

@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 login_required();
 
 if (($_SESSION['role'] ?? '') !== 'aluno') {
@@ -112,10 +112,19 @@ $q = $pdo->prepare(
 );
 $q->execute([$studentId, $studentId]);
 $avatars = $q->fetchAll();
+foreach ($avatars as &$avatar) {
+    $images = avatar_character_images((string)$avatar['slug']);
+    $avatar['profile_image_path'] = avatar_profile_image($avatar);
+    $avatar['full_image_path'] = $images['full'];
+}
+unset($avatar);
 
-$q = $pdo->prepare('SELECT a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
+$q = $pdo->prepare('SELECT a.slug, a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
 $q->execute([$studentId]);
 $currentAvatar = $q->fetch();
+if ($currentAvatar) {
+    $currentAvatar['profile_image_path'] = avatar_profile_image($currentAvatar);
+}
 ?>
 <!doctype html>
 <html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
@@ -125,14 +134,14 @@ $currentAvatar = $q->fetch();
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#F5F7FF">
     <title>Galeria Galáctica</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
-    <script src="assets/avatar-gallery.js" defer></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
+    <script src="<?= e(application_asset_url('js/avatar-gallery.js')) ?>" defer></script>
 </head>
 
 <body>
     <header class="nav">
-        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <a class="nav-brand" href="dashboard.php"><img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">Lunaris Academy</a>
         <nav lang="<?= e(current_language()) ?>">
             <a href="dashboard.php"><?= e(t('Painel')) ?></a>
             <a href="universo.php"><?= e(t('Universo')) ?></a>
@@ -156,7 +165,7 @@ $currentAvatar = $q->fetch();
             </div>
 
             <div class="avatar-current" aria-live="polite">
-                <img class="avatar-current-icon" src="<?= e(($currentAvatar['image_path'] ?? '') ?: 'assets/avatars/luna.svg') ?>" alt="Avatar atual: <?= e($currentAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>" width="72" height="84">
+                <img class="avatar-current-icon" src="<?= e($currentAvatar['profile_image_path'] ?? 'assets/avatars/luna.svg') ?>" alt="Avatar atual: <?= e($currentAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>" width="72" height="84">
                 <span><small>Seu avatar atual</small><strong><?= e($currentAvatar['name'] ?? 'Luna — Guardiã Lunar') ?></strong></span>
             </div>
 
@@ -214,7 +223,17 @@ $currentAvatar = $q->fetch();
                         <?php elseif ($owned): ?>
                             <span class="avatar-owned-badge">✓ Desbloqueado</span>
                         <?php endif; ?>
-                        <img class="avatar-art" src="<?= e($avatar['image_path'] ?: 'assets/avatars/galaxia.svg') ?>" alt="Ilustração original de <?= e($avatar['name']) ?>" width="180" height="210">
+                        <?php if ($avatar['full_image_path']): ?>
+                            <button type="button" class="avatar-art-button" data-avatar-details
+                                data-avatar-name="<?= e($avatar['name']) ?>"
+                                data-avatar-full-image="<?= e($avatar['full_image_path']) ?>"
+                                aria-haspopup="dialog"
+                                aria-label="Ver imagem completa de <?= e($avatar['name']) ?>">
+                                <img class="avatar-art" src="<?= e($avatar['profile_image_path']) ?>" alt="Avatar de <?= e($avatar['name']) ?>" width="180" height="210">
+                            </button>
+                        <?php else: ?>
+                            <img class="avatar-art" src="<?= e($avatar['profile_image_path']) ?>" alt="Avatar de <?= e($avatar['name']) ?>" width="180" height="210">
+                        <?php endif; ?>
                         <span class="avatar-rarity"><?= e($rarityName) ?></span>
                         <h2><?= e($avatar['name']) ?></h2>
                         <p><?= e($avatar['description']) ?></p>
@@ -247,6 +266,15 @@ $currentAvatar = $q->fetch();
             </div>
         </section>
     </main>
+    <dialog class="avatar-detail-dialog" aria-labelledby="avatarDetailTitle">
+        <div class="avatar-detail-content">
+            <div class="avatar-detail-heading">
+                <h2 id="avatarDetailTitle"></h2>
+                <button type="button" class="avatar-detail-close" aria-label="Fechar detalhes do personagem">&times;</button>
+            </div>
+            <img class="avatar-detail-image" src="" alt="">
+        </div>
+    </dialog>
 </body>
 
 </html>

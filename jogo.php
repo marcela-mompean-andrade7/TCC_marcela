@@ -1,10 +1,13 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 login_required();
 if (($_SESSION['role'] ?? '') !== 'aluno') redirect('dashboard.php');
-$q = $pdo->prepare('SELECT a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
+$q = $pdo->prepare('SELECT a.slug, a.name, a.icon, a.image_path FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
 $q->execute([$_SESSION['user_id']]);
 $currentAvatar = $q->fetch();
+if ($currentAvatar) {
+    $currentAvatar['profile_image_path'] = avatar_profile_image($currentAvatar);
+}
 $names = ['operacoes' => 'Operações com Números', 'fracoes' => 'Frações e Razões', 'equacoes' => 'Equações de 1º Grau', 'geometria' => 'Área e Perímetro'];
 $game = $_GET['game'] ?? 'operacoes';
 if (!isset($names[$game])) $game = 'operacoes';
@@ -51,13 +54,22 @@ function q(string $game, int $l): array
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Jogo</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
-    <header class="nav"><b>MathUp</b>
-        <nav><?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e(($currentAvatar['image_path'] ?? '') ?: 'assets/avatars/galaxia.svg') ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="38" height="38"><?php endif; ?><a href="universo.php">🌌 Universo</a><a href="dashboard.php">Painel</a><a href="avatares.php">🎭 Avatares</a></nav>
+    <header class="nav">
+        <a class="nav-brand" href="dashboard.php">
+            <img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="Logo da Lunaris Academy" width="38" height="38">
+            Lunaris Academy
+        </a>
+        <nav>
+            <?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="38" height="38"><?php endif; ?>
+            <a href="universo.php">Universo</a>
+            <a href="dashboard.php">Painel</a>
+            <a href="avatares.php">Avatares</a>
+        </nav>
     </header>
     <main class="container narrow">
         <div class="levelbar"><b>Nível <?= $level ?> • <?= $labels[$level - 1] ?></b><span>⭐ até <?= $level * 10 ?> pontos</span></div>

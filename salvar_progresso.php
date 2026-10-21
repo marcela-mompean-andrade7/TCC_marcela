@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -26,10 +26,9 @@ if (!$activityId || !is_array($answers)) {
     progress_response(400, ['message' => 'Dados de progresso inválidos.']);
 }
 
-$query = $pdo->prepare('SELECT id FROM activities WHERE id=?');
-$query->execute([$activityId]);
-if (!$query->fetch()) {
-    progress_response(404, ['message' => 'Atividade não encontrada.']);
+$studentId = (int)$_SESSION['user_id'];
+if (!student_can_access_activity($pdo, $activityId, $studentId)) {
+    progress_response(404, ['message' => 'Atividade não encontrada ou indisponível para sua turma ou prazo.']);
 }
 
 $query = $pdo->prepare('SELECT id FROM questions WHERE activity_id=?');
@@ -44,7 +43,7 @@ foreach ($answers as $questionId => $answer) {
 }
 
 $query = $pdo->prepare('SELECT id FROM submissions WHERE activity_id=? AND student_id=?');
-$query->execute([$activityId, $_SESSION['user_id']]);
+$query->execute([$activityId, $studentId]);
 if ($query->fetch()) {
     progress_response(409, ['message' => 'Esta atividade já foi enviada.']);
 }
@@ -63,9 +62,9 @@ foreach ($answers as $questionId => $answer) {
     $questionId = (int)$questionId;
     $answer = trim($answer);
     if ($answer === '') {
-        $deleteAnswer->execute([$activityId, $_SESSION['user_id'], $questionId]);
+        $deleteAnswer->execute([$activityId, $studentId, $questionId]);
     } else {
-        $saveAnswer->execute([$activityId, $_SESSION['user_id'], $questionId, $answer]);
+        $saveAnswer->execute([$activityId, $studentId, $questionId, $answer]);
     }
 }
 

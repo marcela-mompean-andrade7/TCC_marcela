@@ -1,5 +1,5 @@
 <?php
-require 'config.php';
+require_once __DIR__ . '/config.php';
 login_required();
 
 try {
@@ -37,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $submittedNeeds = $_POST['accessibility_needs'] ?? [];
     $accessibilityPaletteValue = $_POST['accessibility_palette'] ?? '';
     $accessibilityPalette = is_string($accessibilityPaletteValue) ? $accessibilityPaletteValue : '';
+    $presentationPreferences = array_values(array_intersect(
+        normalize_accessibility_preferences($u['accessibility_needs'] ?? null),
+        ['readable_text', 'accessible_font']
+    ));
     $accessibilityNeeds = [];
 
     if ($newName === '') {
@@ -77,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ) {
         $errors[] = 'Selecione recursos de acessibilidade válidos.';
     } else {
-        $accessibilityNeeds = array_values(array_unique($submittedNeeds));
+        $accessibilityNeeds = array_values(array_unique(array_merge($submittedNeeds, $presentationPreferences)));
     }
 
     if ($accessibilityPalette !== '' && array_key_exists($accessibilityPalette, accessibility_palette_options())) {
@@ -206,10 +210,17 @@ if (($u['role'] ?? '') === 'aluno') {
     $q = $pdo->prepare('SELECT a.* FROM student_avatar_selection s JOIN avatars a ON a.id = s.avatar_id WHERE s.student_id = ?');
     $q->execute([$_SESSION['user_id']]);
     $selectedAvatar = $q->fetch();
+    if ($selectedAvatar) {
+        $selectedAvatar['profile_image_path'] = avatar_profile_image($selectedAvatar);
+    }
 
     $q = $pdo->prepare('SELECT a.* FROM student_avatars sa JOIN avatars a ON a.id = sa.avatar_id WHERE sa.student_id = ? ORDER BY a.display_order, a.id');
     $q->execute([$_SESSION['user_id']]);
     $ownedAvatars = $q->fetchAll();
+    foreach ($ownedAvatars as &$ownedAvatar) {
+        $ownedAvatar['profile_image_path'] = avatar_profile_image($ownedAvatar);
+    }
+    unset($ownedAvatar);
 
     $q = $pdo->prepare("SELECT COALESCE(MAX(CASE difficulty WHEN 'dificil' THEN 3 WHEN 'medio' THEN 2 ELSE 1 END), 0) FROM game_results WHERE student_id = ?");
     $q->execute([$_SESSION['user_id']]);
@@ -243,22 +254,22 @@ if (($u['role'] ?? '') === 'aluno') {
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#F5F7FF">
     <title><?= e(t('Perfil')) ?> — Lunaris Academy</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <script src="assets/theme.js"></script>
+    <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
+    <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
 
 <body>
     <header class="nav">
-        <a class="nav-brand" href="dashboard.php"><img src="logo.png" alt="" aria-hidden="true">Lunaris Academy</a>
+        <a class="nav-brand" href="dashboard.php"><img src="<?= e(application_asset_url('imagens/logo.png')) ?>" alt="" aria-hidden="true">Lunaris Academy</a>
         <nav lang="<?= e(current_language()) ?>">
             <a href="dashboard.php"><?= e(t('Painel')) ?></a>
             <?php if (($u['role'] ?? '') === 'aluno'): ?>
-                <a href="universo.php">🌌 <?= e(t('Universo')) ?></a>
-                <a href="missoes.php">🚀 <?= e(t('Missões')) ?></a>
-                <a href="planetas.php">🪐 <?= e(t('Planetas')) ?></a>
-                <a href="avatares.php">🎭 <?= e(t('Avatares')) ?></a>
+                <a href="universo.php"> <?= e(t('Universo')) ?></a>
+                <a href="missoes.php"> <?= e(t('Missões')) ?></a>
+                <a href="planetas.php"> <?= e(t('Planetas')) ?></a>
+                <a href="avatares.php"> <?= e(t('Avatares')) ?></a>
             <?php endif; ?>
-            <a href="perfil.php" aria-current="page">🏅 <?= e(t('Perfil')) ?></a>
+            <a href="perfil.php" aria-current="page"> <?= e(t('Perfil')) ?></a>
             <a href="logout.php"><?= e(t('Sair')) ?></a>
         </nav>
     </header>
@@ -267,7 +278,7 @@ if (($u['role'] ?? '') === 'aluno') {
         <section class="profile-shell">
             <div class="profile-header">
                 <div class="profile-avatar-large avatar-emblem">
-                    <img src="<?= e(($selectedAvatar['image_path'] ?? '') ?: 'assets/avatars/luna.svg') ?>" alt="<?= e(t('Avatar atual')) ?>: <?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>">
+                    <img src="<?= e($selectedAvatar['profile_image_path'] ?? 'assets/avatars/luna.svg') ?>" alt="<?= e(t('Avatar atual')) ?>: <?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>">
                 </div>
 
                 <div class="profile-title-wrap">
@@ -281,10 +292,10 @@ if (($u['role'] ?? '') === 'aluno') {
 
             <?php if (($u['role'] ?? '') === 'aluno'): ?>
                 <div class="profile-stats">
-                    <article class="profile-stat"><span>🎭 <?= e(t('Avatares desbloqueados')) ?></span><strong><?= count($ownedAvatars) ?></strong></article>
-                    <article class="profile-stat"><span>🎮 <?= e(t('Maior nível jogado')) ?></span><strong><?= $highestLevel > 0 ? e((string)$highestLevel) : '—' ?></strong></article>
-                    <article class="profile-stat"><span>🪐 <?= e(t('Planetas na coleção')) ?></span><strong><?= count($ownedPlanets) ?></strong></article>
-                    <article class="profile-stat"><span>🚀 <?= e(t('Estrelas de missões')) ?></span><strong><?= e((string)$missionSummary['mission_stars']) ?></strong></article>
+                    <article class="profile-stat"><span> <?= e(t('Avatares desbloqueados')) ?></span><strong><?= count($ownedAvatars) ?></strong></article>
+                    <article class="profile-stat"><span> <?= e(t('Maior nível jogado')) ?></span><strong><?= $highestLevel > 0 ? e((string)$highestLevel) : '—' ?></strong></article>
+                    <article class="profile-stat"><span> <?= e(t('Planetas na coleção')) ?></span><strong><?= count($ownedPlanets) ?></strong></article>
+                    <article class="profile-stat"><span> <?= e(t('Estrelas de missões')) ?></span><strong><?= e((string)$missionSummary['mission_stars']) ?></strong></article>
                 </div>
             <?php endif; ?>
 
@@ -390,14 +401,14 @@ if (($u['role'] ?? '') === 'aluno') {
                         <a class="btn small" href="avatares.php"><?= e(t('Ver loja de avatares')) ?></a>
                     </div>
                     <div class="personal-universe-current">
-                        <img src="<?= e(($selectedAvatar['image_path'] ?? '') ?: 'assets/avatars/luna.svg') ?>" alt="<?= e(t('Personagem atual')) ?>: <?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>">
+                        <img src="<?= e($selectedAvatar['profile_image_path'] ?? 'assets/avatars/luna.svg') ?>" alt="<?= e(t('Personagem atual')) ?>: <?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>">
                         <div><small><?= e(t('Seu companheiro Lunaris')) ?></small><strong><?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?></strong></div>
                     </div>
                     <h3 class="collection-subheading">🎭 <?= e(t('Avatares desbloqueados')) ?></h3>
                     <div class="avatar-owned-list">
                         <?php foreach ($ownedAvatars as $ownedAvatar): ?>
                             <article class="avatar-owned-item<?= (int)$ownedAvatar['id'] === (int)($selectedAvatar['id'] ?? 0) ? ' is-current' : '' ?>">
-                                <img src="<?= e($ownedAvatar['image_path'] ?: 'assets/avatars/galaxia.svg') ?>" alt="<?= e($ownedAvatar['name']) ?>" width="54" height="62">
+                                <img src="<?= e($ownedAvatar['profile_image_path']) ?>" alt="<?= e($ownedAvatar['name']) ?>" width="54" height="62">
                                 <strong><?= e($ownedAvatar['name']) ?></strong>
                                 <?php if ((int)$ownedAvatar['id'] === (int)($selectedAvatar['id'] ?? 0)): ?><small><?= e(t('Avatar atual')) ?></small><?php endif; ?>
                             </article>
