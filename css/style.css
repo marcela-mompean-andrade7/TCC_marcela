@@ -1080,6 +1080,7 @@ img {
     font-size: clamp(1.65rem, 4vw, 2.65rem);
     line-height: 1.35;
     color: var(--white);
+    overflow-wrap: anywhere;
 }
 
 .quiz form {
@@ -1087,7 +1088,18 @@ img {
     gap: 15px;
     max-width: 650px;
     margin: 0 auto;
-    }
+}
+
+.quiz form label {
+    color: var(--text-soft);
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.quiz form .hint {
+    margin: 0;
+}
 
 .quiz input,
 .answer-input {
@@ -6962,4 +6974,100 @@ html[data-color-palette="purple-yellow"] :is(.success, .success-message, .activi
     color: var(--color-meaning-success) !important;
     background: var(--color-meaning-success-bg) !important;
     border: 2px solid currentColor !important;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"],
+html[data-contrast="true"][data-color-palette="purple-yellow"] {
+    --bg: #fff;
+    --bg-2: #fff;
+    --bg-3: #fff;
+    --panel: #fff;
+    --panel-2: #fff;
+    --card: #fff;
+    --white: #111;
+    --text: #111;
+    --text-soft: #111;
+    --muted: #333;
+    --border: #111;
+    --color-action: #111;
+    --color-action-text: #fff;
+    --color-link: #003c8f;
+    --color-focus: #7a00cc;
+    --color-meaning-success: #005a2b;
+    --color-meaning-error: #8a0018;
+    --color-meaning-info: #004c86;
+    --color-meaning-success-bg: #fff;
+    --color-meaning-error-bg: #fff;
+    --color-meaning-info-bg: #fff;
+    --shadow-card: 0 0 0 2px #111;
+}
+
+html[data-contrast="true"][data-theme="dark"][data-color-palette="blue-orange"],
+html[data-contrast="true"][data-theme="dark"][data-color-palette="purple-yellow"] {
+    color-scheme: dark;
+    --bg: #000;
+    --bg-2: #000;
+    --bg-3: #000;
+    --panel: #000;
+    --panel-2: #000;
+    --card: #000;
+    --white: #fff;
+    --text: #fff;
+    --text-soft: #fff;
+    --muted: #f0f0f0;
+    --border: #fff;
+    --color-action: #fff;
+    --color-action-text: #000;
+    --color-link: #ff0;
+    --color-focus: #ff0;
+    --color-meaning-success: #7dffad;
+    --color-meaning-error: #ff9eaa;
+    --color-meaning-info: #8ad9ff;
+    --color-meaning-success-bg: #000;
+    --color-meaning-error-bg: #000;
+    --color-meaning-info-bg: #000;
+    --shadow-card: 0 0 0 2px #fff;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"] body,
+html[data-contrast="true"][data-color-palette="purple-yellow"] body {
+    color: var(--text) !important;
+    background: var(--bg) !important;
+    background-image: none !important;
+    animation: none !important;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"] body::before,
+html[data-contrast="true"][data-color-palette="blue-orange"] body::after,
+html[data-contrast="true"][data-color-palette="purple-yellow"] body::before,
+html[data-contrast="true"][data-color-palette="purple-yellow"] body::after {
+    display: none !important;
+    background: none !important;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"] :is(input, select, textarea),
+html[data-contrast="true"][data-color-palette="purple-yellow"] :is(input, select, textarea) {
+    color: var(--text) !important;
+    background: var(--panel-2) !important;
+    border: 2px solid var(--border) !important;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"] :is(button, .btn),
+html[data-contrast="true"][data-color-palette="purple-yellow"] :is(button, .btn) {
+    color: var(--color-action-text) !important;
+    background: var(--color-action) !important;
+    border: 2px solid var(--color-action-text) !important;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"] .lunaris-settings :is(button, select),
+html[data-contrast="true"][data-color-palette="purple-yellow"] .lunaris-settings :is(button, select) {
+    color: var(--text) !important;
+    background: var(--panel-2) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-contrast="true"][data-color-palette="blue-orange"] .lunaris-settings button[aria-pressed="true"],
+html[data-contrast="true"][data-color-palette="purple-yellow"] .lunaris-settings button[aria-pressed="true"] {
+    color: var(--color-action-text) !important;
+    background: var(--color-action) !important;
 }

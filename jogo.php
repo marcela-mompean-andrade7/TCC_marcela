@@ -8,9 +8,9 @@ $currentAvatar = $q->fetch();
 if ($currentAvatar) {
     $currentAvatar['profile_image_path'] = avatar_profile_image($currentAvatar);
 }
-$names = ['operacoes' => 'Operações com Números', 'fracoes' => 'Frações e Razões', 'equacoes' => 'Equações de 1º Grau', 'geometria' => 'Área e Perímetro'];
+$names = math_game_titles();
 $game = $_GET['game'] ?? 'operacoes';
-if (!isset($names[$game])) $game = 'operacoes';
+if (!is_string($game) || !isset($names[$game])) $game = 'operacoes';
 $level = max(1, min(3, (int)($_GET['level'] ?? 1)));
 $labels = ['Fácil', 'Médio', 'Difícil'];
 function q(string $game, int $l): array
@@ -21,7 +21,12 @@ function q(string $game, int $l): array
         $b = random_int(-$n, $n);
         $op = ['+', '-', '×'][array_rand(['+', '-', '×'])];
         $ans = $op === '+' ? $a + $b : ($op === '-' ? $a - $b : $a * $b);
-        return ["Quanto é $a $op $b?", (string)$ans];
+        $spokenOperation = ['+' => t('mais'), '-' => t('menos'), '×' => t('vezes')][$op];
+        return [
+            sprintf(t('Quanto é %s %s %s?'), $a, $op, $b),
+            (string)$ans,
+            sprintf(t('Quanto é %s %s %s?'), $a, $spokenOperation, $b),
+        ];
     }
     if ($game === 'fracoes') {
         $d = random_int(2, $l === 1 ? 5 : 10);
@@ -34,18 +39,38 @@ function q(string $game, int $l): array
             return $b ? $g($b, $a % $b) : abs($a);
         };
         $z = $g($num, $den);
-        return ["Quanto é $n/$d + $k/$m? (fração simplificada)", ($num / $z) . '/' . ($den / $z)];
+        return [
+            sprintf(t('Quanto é %s/%s + %s/%s? (fração simplificada)'), $n, $d, $k, $m),
+            ($num / $z) . '/' . ($den / $z),
+            sprintf(t('Quanto é %s sobre %s mais %s sobre %s? Responda com uma fração simplificada.'), $n, $d, $k, $m),
+        ];
     }
     if ($game === 'equacoes') {
         $x = random_int(1, $n);
         $a = random_int(2, $l === 1 ? 5 : 12);
         $b = random_int(1, $n);
-        return ["Resolva: {$a}x + {$b} = " . ($a * $x + $b) . ". Qual é x?", (string)$x];
+        $total = $a * $x + $b;
+        return [
+            sprintf(t('Resolva: %sx + %s = %s. Qual é x?'), $a, $b, $total),
+            (string)$x,
+            sprintf(t('Resolva a equação: %s vezes x mais %s é igual a %s. Qual é o valor de x?'), $a, $b, $total),
+        ];
     }
     $lado = random_int(2, $n);
-    return random_int(0, 1) ? ["Quadrado de lado $lado. Qual é a área?", (string)($lado * $lado)] : ["Quadrado de lado $lado. Qual é o perímetro?", (string)(4 * $lado)];
+    if (random_int(0, 1)) {
+        return [
+            sprintf(t('Quadrado de lado %s. Qual é a área?'), $lado),
+            (string)($lado * $lado),
+            sprintf(t('Um quadrado tem lado de %s unidades. Qual é a área?'), $lado),
+        ];
+    }
+    return [
+        sprintf(t('Quadrado de lado %s. Qual é o perímetro?'), $lado),
+        (string)(4 * $lado),
+        sprintf(t('Um quadrado tem lado de %s unidades. Qual é o perímetro?'), $lado),
+    ];
 }
-[$question, $answer] = q($game, $level);
+[$question, $answer, $accessibleQuestion] = q($game, $level);
 ?>
 <!doctype html>
 <html lang="<?= e(current_language()) ?>" <?= accessibility_html_attributes() ?>>
@@ -53,7 +78,7 @@ function q(string $game, int $l): array
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Jogo</title>
+    <title><?= e(t('Jogo')) ?> — Lunaris Academy</title>
     <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
     <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
@@ -65,19 +90,28 @@ function q(string $game, int $l): array
             Lunaris Academy
         </a>
         <nav>
-            <?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="38" height="38"><?php endif; ?>
-            <a href="universo.php">Universo</a>
-            <a href="dashboard.php">Painel</a>
-            <a href="avatares.php">Avatares</a>
+            <?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="<?= e(sprintf(t('Avatar atual: %s'), $currentAvatar['name'])) ?>" width="38" height="38"><?php endif; ?>
+            <a href="universo.php"><?= e(t('Universo')) ?></a>
+            <a href="dashboard.php"><?= e(t('Painel')) ?></a>
+            <a href="avatares.php"><?= e(t('Avatares')) ?></a>
         </nav>
     </header>
     <main class="container narrow">
-        <div class="levelbar"><b>Nível <?= $level ?> • <?= $labels[$level - 1] ?></b><span>⭐ até <?= $level * 10 ?> pontos</span></div>
+        <div class="levelbar"><b><?= e(sprintf(t('Nível %s • %s'), $level, t($labels[$level - 1]))) ?></b><span>⭐ <?= e(sprintf(t('%s pontos para avançar'), $level * 10)) ?></span></div>
         <div class="card quiz"><span class="tag"><?= e($names[$game]) ?></span>
-            <h1><?= e($question) ?></h1>
-            <form method="post" action="jogo_resultado.php"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="game" value="<?= e($game) ?>"><input type="hidden" name="level" value="<?= $level ?>"><input type="hidden" name="answer" value="<?= e($answer) ?>"><input name="user_answer" required autocomplete="off" placeholder="Digite sua resposta"><button class="btn full">Responder</button></form>
+            <h1 aria-label="<?= e($accessibleQuestion) ?>"><?= e($question) ?></h1>
+            <form method="post" action="jogo_resultado.php">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <input type="hidden" name="game" value="<?= e($game) ?>">
+                <input type="hidden" name="level" value="<?= $level ?>">
+                <input type="hidden" name="answer" value="<?= e($answer) ?>">
+                <label for="gameAnswer"><?= e(t('Sua resposta')) ?></label>
+                <input id="gameAnswer" name="user_answer" required autocomplete="off" placeholder="<?= e(t('Digite sua resposta')) ?>" aria-describedby="gameAnswerHint">
+                <p class="hint" id="gameAnswerHint"><?= e(t('Digite sua resposta e pressione Responder.')) ?></p>
+                <button class="btn full" type="submit"><?= e(t('Responder')) ?></button>
+            </form>
         </div>
-        <p class="hint">Resolva com calma. Se acertar, você pode avançar de nível.</p>
+        <p class="hint"><?= e(t('Resolva com calma. Se acertar, você pode avançar de nível.')) ?></p>
     </main>
 </body>
 

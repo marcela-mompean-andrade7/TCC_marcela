@@ -378,6 +378,18 @@ function t(string $message): string
     return $translations[$language][$message] ?? $message;
 }
 
+function math_game_titles(): array
+{
+    $titles = [
+        'operacoes' => 'Operações com Números',
+        'fracoes' => 'Frações e Razões',
+        'equacoes' => 'Equações de 1º Grau',
+        'geometria' => 'Área e Perímetro',
+    ];
+
+    return array_map('t', $titles);
+}
+
 function accessibility_status_options(): array
 {
     return [

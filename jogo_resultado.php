@@ -10,7 +10,9 @@ $currentAvatar = $q->fetch();
 if ($currentAvatar) {
     $currentAvatar['profile_image_path'] = avatar_profile_image($currentAvatar);
 }
+$gameNames = math_game_titles();
 $game = $_POST['game'] ?? 'operacoes';
+if (!is_string($game) || !isset($gameNames[$game])) $game = 'operacoes';
 $level = max(1, min(3, (int)($_POST['level'] ?? 1)));
 $correct = trim($_POST['answer'] ?? '');
 $given = trim($_POST['user_answer'] ?? '');
@@ -31,7 +33,7 @@ $next = $ok && $level < 3 ? $level + 1 : $level;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Resultado</title>
+    <title><?= e(t('Resultado')) ?> — Lunaris Academy</title>
     <link rel="stylesheet" href="<?= e(application_asset_url('css/style.css')) ?>">
     <script src="<?= e(application_asset_url('js/theme.js')) ?>"></script>
 </head>
@@ -43,17 +45,28 @@ $next = $ok && $level < 3 ? $level + 1 : $level;
             Lunaris Academy
         </a>
         <nav>
-            <?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="38" height="38"><?php endif; ?>
-            <a href="jogo.php">Próximo jogo</a>
-            <a href="dashboard.php">Painel</a>
-            <a href="avatares.php">Avatares</a>
+            <?php if ($currentAvatar): ?><img class="nav-avatar nav-avatar-image" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="<?= e(sprintf(t('Avatar atual: %s'), $currentAvatar['name'])) ?>" width="38" height="38"><?php endif; ?>
+            <a href="jogo.php"><?= e(t('Próximo jogo')) ?></a>
+            <a href="dashboard.php"><?= e(t('Painel')) ?></a>
+            <a href="avatares.php"><?= e(t('Avatares')) ?></a>
         </nav>
     </header>
-    <main class="container narrow">
+    <main class="container narrow" aria-labelledby="gameResultTitle">
         <div class="card result">
-            <?php if ($currentAvatar): ?><div class="result-avatar"><img class="result-avatar-portrait" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="Avatar atual: <?= e($currentAvatar['name']) ?>" width="48" height="54"><small><?= e($currentAvatar['name']) ?></small></div><?php endif; ?>
-            <div class="big"><?= $ok ? '🎉' : '' ?></div>
-            <h1><?= $ok ? 'Muito bem!' : 'Continue tentando!' ?></h1><?php if ($ok): ?><p>Você ganhou <b><?= $score ?> pontos</b>.</p><?php if ($level < 3): ?><p>🔓 Próximo nível desbloqueado!</p><?php endif; ?><?php else: ?><p>A resposta correta era <b><?= e($correct) ?></b>.</p><?php endif; ?><div class="actions"><a class="btn" href="jogo.php?game=<?= urlencode($game) ?>&level=<?= $next ?>">Próxima</a><a class="btn light" href="dashboard.php">Painel</a></div>
+            <?php if ($currentAvatar): ?><div class="result-avatar"><img class="result-avatar-portrait" src="<?= e($currentAvatar['profile_image_path']) ?>" alt="<?= e(sprintf(t('Avatar atual: %s'), $currentAvatar['name'])) ?>" width="48" height="54"><small><?= e($currentAvatar['name']) ?></small></div><?php endif; ?>
+            <p class="tag"><?= e($gameNames[$game]) ?></p>
+            <div class="big" aria-hidden="true"><?= $ok ? '🎉' : '' ?></div>
+            <h1 id="gameResultTitle" role="status" aria-live="polite"><?= e(t($ok ? 'Muito bem!' : 'Continue tentando!')) ?></h1>
+            <?php if ($ok): ?>
+                <p><?= e(t('Você ganhou')) ?> <b><?= e(sprintf(t('%s pontos'), $score)) ?></b>.</p>
+                <?php if ($level < 3): ?><p><?= e(t('Próximo nível desbloqueado!')) ?></p><?php endif; ?>
+            <?php else: ?>
+                <p><?= e(t('A resposta correta era')) ?> <b><?= e($correct) ?></b>.</p>
+            <?php endif; ?>
+            <div class="actions">
+                <a class="btn" href="jogo.php?game=<?= urlencode($game) ?>&amp;level=<?= $next ?>"><?= e(t('Próxima')) ?></a>
+                <a class="btn light" href="dashboard.php"><?= e(t('Painel')) ?></a>
+            </div>
         </div>
     </main>
 </body>

@@ -4,6 +4,7 @@ login_required();
 $q = $pdo->prepare('SELECT * FROM users WHERE id=?');
 $q->execute([$_SESSION['user_id']]);
 $u = $q->fetch();
+$gameTitles = math_game_titles();
 $acts = [];
 if ($u['role'] === 'aluno') {
     $q = $pdo->prepare("SELECT a.*, u.name professor, s.id as submission_id,
@@ -184,7 +185,7 @@ if ($u['role'] === 'aluno') {
                         <th><?= e(t('Pontos')) ?></th>
                         <th><?= e(t('Acertos')) ?></th>
                     </tr><?php foreach ($res as $r): ?><tr>
-                            <td><?= e($r['game']) ?></td>
+                            <td><?= e($gameTitles[$r['game']] ?? $r['game']) ?></td>
                             <td><?= e($r['difficulty']) ?></td>
                             <td><?= e((string)$r['score']) ?></td>
                             <td><?= e((string)$r['correct_answers']) ?>/<?= e((string)$r['total_questions']) ?></td>

@@ -168,6 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <fieldset id="accessibilityNeedsField" class="signup-resource-options">
           <legend><?= e(t('Quais recursos de acessibilidade poderiam ajudar? (opcional)')) ?></legend>
+          <p class="signup-privacy-note"><?= e(t('A informação sobre deficiência não ativa adaptações automaticamente. Escolha abaixo os recursos adequados às suas necessidades; por exemplo, texto ampliado e alto contraste para baixa visão, compatibilidade com leitores de tela e teclado para cegueira, ou paleta alternativa para daltonismo. As escolhas são aplicadas às páginas e aos jogos.')) ?></p>
           <?php foreach (accessibility_resource_options() as $value => $label): ?>
             <label class="signup-checkbox">
               <input type="checkbox" name="accessibility_needs[]" value="<?= e($value) ?>"<?= in_array($value, $accessibilityNeeds, true) ? ' checked' : '' ?>>
