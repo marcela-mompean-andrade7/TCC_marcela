@@ -70,6 +70,12 @@ function q(string $game, int $l): array
         sprintf(t('Um quadrado tem lado de %s unidades. Qual é o perímetro?'), $lado),
     ];
 }
+
+
+
+
+
+
 [$question, $answer, $accessibleQuestion] = q($game, $level);
 ?>
 <!doctype html>
