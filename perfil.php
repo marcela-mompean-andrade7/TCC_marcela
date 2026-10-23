@@ -200,6 +200,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$errors) {
 $q = $pdo->prepare('SELECT p.* FROM student_planets sp JOIN planets p ON p.id = sp.planet_id WHERE sp.student_id = ? ORDER BY p.display_order ASC');
 $q->execute([$_SESSION['user_id']]);
 $ownedPlanets = $q->fetchAll();
+$planetArtwork = [
+    'terra' => ['path' => 'assets/planets/terra.jpg', 'alt' => 'Terra vista do espaço'],
+    'marte' => ['path' => 'assets/planets/marte.jpg', 'alt' => 'Marte visto do espaço'],
+    'jupiter' => ['path' => 'assets/planets/jupiter.jpg', 'alt' => 'Júpiter visto do espaço'],
+    'saturno' => ['path' => 'assets/planets/saturno.jpg', 'alt' => 'Saturno visto do espaço'],
+    'netuno' => ['path' => 'assets/planets/netuno.jpg', 'alt' => 'Netuno visto do espaço'],
+    'urano' => ['path' => 'assets/planets/urano.jpg', 'alt' => 'Urano visto do espaço'],
+    'sol' => ['path' => 'assets/planets/sol.jpg', 'alt' => 'Sol visto do espaço'],
+];
 
 $selectedAvatar = null;
 $ownedAvatars = [];
@@ -421,7 +430,20 @@ if (($u['role'] ?? '') === 'aluno') {
                         <div class="planet-collection">
                             <?php foreach ($ownedPlanets as $planet): ?>
                                 <article class="collection-item">
-                                    <div class="collection-icon"><?= e($planet['icon']) ?></div>
+                                    <?php if (isset($planetArtwork[$planet['slug']])): ?>
+                                        <div class="collection-icon collection-planet-image-wrap">
+                                            <img
+                                                class="collection-planet-image"
+                                                src="<?= e(application_asset_url($planetArtwork[$planet['slug']]['path'])) ?>"
+                                                alt="<?= e($planetArtwork[$planet['slug']]['alt']) ?>"
+                                                width="76"
+                                                height="76"
+                                                loading="lazy"
+                                                decoding="async">
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="collection-icon"><?= e($planet['icon']) ?></div>
+                                    <?php endif; ?>
                                     <strong><?= e($planet['name']) ?></strong>
                                     <small><?= e(t($planet['slug'] === 'terra' ? 'Seu planeta de origem' : 'Desbloqueado')) ?></small>
                                 </article>

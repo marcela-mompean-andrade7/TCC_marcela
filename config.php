@@ -290,11 +290,6 @@ function avatar_profile_image(array $avatar): string
 
 function seed_default_planets(PDO $pdo): void
 {
-    $count = (int)$pdo->query('SELECT COUNT(*) FROM planets')->fetchColumn();
-    if ($count > 0) {
-        return;
-    }
-
     $planets = [
         ['Terra', 'terra', 'Seu planeta de origem', '🌍', 0, 1],
         ['Marte', 'marte', 'Planeta da coragem e dos desafios', '🔴', 500, 2],
@@ -305,7 +300,16 @@ function seed_default_planets(PDO $pdo): void
         ['Sol', 'sol', 'Símbolo máximo da jornada', '☀️', 5000, 7],
     ];
 
-    $stmt = $pdo->prepare('INSERT INTO planets(name, slug, description, icon, price, display_order) VALUES(?,?,?,?,?,?)');
+    $stmt = $pdo->prepare(
+        'INSERT INTO planets(name, slug, description, icon, price, display_order)
+         VALUES(?,?,?,?,?,?)
+         ON DUPLICATE KEY UPDATE
+            name = VALUES(name),
+            description = VALUES(description),
+            icon = VALUES(icon),
+            price = VALUES(price),
+            display_order = VALUES(display_order)'
+    );
     foreach ($planets as $planet) {
         $stmt->execute($planet);
     }
@@ -320,7 +324,7 @@ function ensure_student_starter_planet(PDO $pdo, int $studentId): void
     $planet = $q->fetch();
 
     if (!$planet) {
-        return;
+        throw new RuntimeException('O planeta inicial Terra não está cadastrado.');
     }
 
     $q = $pdo->prepare('INSERT IGNORE INTO student_planets(student_id, planet_id) VALUES(?, ?)');

@@ -98,6 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $accessibilityNeeds ? json_encode($accessibilityNeeds, JSON_THROW_ON_ERROR) : null,
         in_array('other', $accessibilityNeeds, true) && $accessibilityOther !== '' ? $accessibilityOther : null,
       ]);
+      if ($role === 'aluno') {
+        ensure_student_starter_planet($pdo, (int)$pdo->lastInsertId());
+      }
       redirect('login.php?ok=1');
     }
   }

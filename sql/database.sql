@@ -302,14 +302,11 @@ ON DUPLICATE KEY UPDATE
  price = VALUES(price),
  display_order = VALUES(display_order);
 
-INSERT INTO student_planets(student_id, planet_id)
+INSERT IGNORE INTO student_planets(student_id, planet_id)
 SELECT u.id, p.id
 FROM users u
 JOIN planets p ON p.slug = 'terra'
-WHERE u.role = 'aluno'
-AND NOT EXISTS (
-    SELECT 1 FROM student_planets sp WHERE sp.student_id = u.id AND sp.planet_id = p.id
-);
+WHERE u.role = 'aluno';
 
 INSERT IGNORE INTO student_avatars(student_id, avatar_id)
 SELECT u.id, a.id
