@@ -3,10 +3,10 @@
 declare(strict_types=1);
 session_start();
 
-$host = 'localhost';
-$db = 'mathplay';
-$user = 'root';
-$pass = '';
+$host = '__DB_HOST__';
+$db = '__DB_NAME__';
+$user = '__DB_USER__';
+$pass = '__DB_PASS__';
 $port = '3308';
 try {
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4", $user, $pass, [
