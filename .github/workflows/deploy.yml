@@ -14,12 +14,15 @@ jobs:
       - name: Baixar o código do repositório
         uses: actions/checkout@v4
 
-      - name: Substituir variaveis de ambiente no config.php
+      
+      - name: Atualizar variáveis de conexão no config.php
         run: |
-          sed -i "s/__DB_HOST__/${{ secrets.DB_HOST }}/g" config.php
-          sed -i "s/__DB_NAME__/${{ secrets.DB_NAME }}/g" config.php
-          sed -i "s/__DB_USER__/${{ secrets.DB_USER }}/g" config.php
-          sed -i "s/__DB_PASS__/${{ secrets.DB_PASS }}/g" config.php
+          sed -i "s|\$host = 'localhost';|\$host = '${{ secrets.DB_HOST }}';|" config.php
+          sed -i "s|\$port = '3308';|\$port = '${{ secrets.DB_PORT }}';|" config.php
+          sed -i "s|\$db = 'mathplay';|\$db = '${{ secrets.DB_NAME }}';|" config.php
+          sed -i "s|\$user = 'root';|\$user = '${{ secrets.DB_USER }}';|" config.php
+          sed -i "s|\$pass = '';|\$pass = '${{ secrets.DB_PASS }}';|" config.php
+
 
       - name: Publicar via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

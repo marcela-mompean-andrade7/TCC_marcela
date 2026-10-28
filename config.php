@@ -3,11 +3,12 @@
 declare(strict_types=1);
 session_start();
 
-$host = 'sql104.byethost8.com';
-$db = 'b8_42774077_lunaris';
-$user = 'b8_42774077';
-$pass = 'Senai@463';
+$host = 'localhost';
 $port = '3308';
+$db = 'mathplay';
+$user = 'root';
+$pass = '';
+
 try {
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4", $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
