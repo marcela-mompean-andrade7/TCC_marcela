@@ -100,7 +100,7 @@ if ($u['role'] === 'aluno') {
                     <h1><?= e(t('Olá,')) ?> <?= e($u['name']) ?>!</h1>
                 </div>
                 <p><?= e($u['escola']) ?> • <?= e(t($u['regiao'])) ?><?php if ($u['serie']): ?> • <?= e(t($u['serie'])) ?><?php endif; ?></p>
-                <?php if ($currentAvatar): ?><p class="dashboard-avatar-name">🎭 <?= e($currentAvatar['name']) ?></p><?php endif; ?>
+                <?php if ($currentAvatar): ?><p class="dashboard-avatar-name"> <?= e($currentAvatar['name']) ?></p><?php endif; ?>
             </div>
             <?php if ($u['role'] === 'aluno'): ?>
                 <div class="points">🌟<?= $totalPoints ?> <?= e(t('pontos')) ?></div>
