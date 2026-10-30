@@ -201,7 +201,7 @@ $q = $pdo->prepare('SELECT p.* FROM student_planets sp JOIN planets p ON p.id = 
 $q->execute([$_SESSION['user_id']]);
 $ownedPlanets = $q->fetchAll();
 $planetArtwork = [
-    'terra' => ['path' => 'assets/planets/terra.jpg', 'alt' => 'Terra vista do espaço'],
+    'terra' => ['path' => 'assets/planets/terra.png', 'alt' => 'Terra vista do espaço'],
     'marte' => ['path' => 'assets/planets/marte.jpg', 'alt' => 'Marte visto do espaço'],
     'jupiter' => ['path' => 'assets/planets/jupiter.jpg', 'alt' => 'Júpiter visto do espaço'],
     'saturno' => ['path' => 'assets/planets/saturno.jpg', 'alt' => 'Saturno visto do espaço'],
@@ -431,7 +431,7 @@ if (($u['role'] ?? '') === 'aluno') {
                             <?php foreach ($ownedPlanets as $planet): ?>
                                 <article class="collection-item">
                                     <?php if (isset($planetArtwork[$planet['slug']])): ?>
-                                        <div class="collection-icon collection-planet-image-wrap">
+                                        <div class="collection-planet-image-wrap">
                                             <img
                                                 class="planet-art-image collection-planet-image"
                                                 src="<?= e(application_asset_url($planetArtwork[$planet['slug']]['path'])) ?>"
