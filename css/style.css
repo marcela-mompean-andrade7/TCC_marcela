@@ -4277,6 +4277,11 @@ html:not([data-theme="dark"]) .planet-visual::after {
     padding: 18px 22px;
     color: var(--muted);
     text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.mission-history-empty > span {
+    width: 100%;
 }
 
 @keyframes missionTwinkle {

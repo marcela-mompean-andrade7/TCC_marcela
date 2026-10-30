@@ -414,7 +414,7 @@ if (($u['role'] ?? '') === 'aluno') {
                         <img src="<?= e($selectedAvatar['profile_image_path'] ?? 'assets/avatars/luna.svg') ?>" alt="<?= e(t('Personagem atual')) ?>: <?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?>">
                         <div><small><?= e(t('Seu companheiro Lunaris')) ?></small><strong><?= e($selectedAvatar['name'] ?? 'Luna — Guardiã Lunar') ?></strong></div>
                     </div>
-                    <h3 class="collection-subheading">🎭 <?= e(t('Avatares desbloqueados')) ?></h3>
+                    <h3 class="collection-subheading"> <?= e(t('Avatares desbloqueados')) ?></h3>
                     <div class="avatar-owned-list">
                         <?php foreach ($ownedAvatars as $ownedAvatar): ?>
                             <article class="avatar-owned-item<?= (int)$ownedAvatar['id'] === (int)($selectedAvatar['id'] ?? 0) ? ' is-current' : '' ?>">
@@ -424,7 +424,7 @@ if (($u['role'] ?? '') === 'aluno') {
                             </article>
                         <?php endforeach; ?>
                     </div>
-                    <h3 class="collection-subheading">🏅 <?= e(t('Planetas conquistados')) ?></h3>
+                    <h3 class="collection-subheading"> <?= e(t('Planetas conquistados')) ?></h3>
 
                     <?php if ($ownedPlanets): ?>
                         <div class="planet-collection">
@@ -455,7 +455,7 @@ if (($u['role'] ?? '') === 'aluno') {
 
                     <div class="mission-profile-heading">
                         <div>
-                            <h3 class="collection-subheading">🚀 <?= e(t('Missões Espaciais')) ?></h3>
+                            <h3 class="collection-subheading"> <?= e(t('Missões Espaciais')) ?></h3>
                             <p><?= e((string)$missionSummary['completed_missions']) ?> <?= e(t('de')) ?> <?= e((string)$missionSummary['total_missions']) ?> <?= e(t('concluídas')) ?> · <?= e((string)$missionSummary['mission_stars']) ?> <?= e(t('estrelas conquistadas')) ?></p>
                         </div>
                         <a class="btn small" href="missoes.php"><?= e(t('Ver missões')) ?></a>
@@ -471,7 +471,7 @@ if (($u['role'] ?? '') === 'aluno') {
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <div class="card mission-history-empty"><?= e(t('Conclua uma missão espacial para registrar suas primeiras estrelas nesta coleção.')) ?></div>
+                        <div class="card mission-history-empty"><span><?= e(t('Conclua uma missão espacial para registrar suas primeiras estrelas nesta coleção.')) ?></span></div>
                     <?php endif; ?>
                 </section>
             <?php endif; ?>
