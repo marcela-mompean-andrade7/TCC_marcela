@@ -433,7 +433,7 @@ if (($u['role'] ?? '') === 'aluno') {
                                     <?php if (isset($planetArtwork[$planet['slug']])): ?>
                                         <div class="collection-icon collection-planet-image-wrap">
                                             <img
-                                                class="collection-planet-image"
+                                                class="planet-art-image collection-planet-image"
                                                 src="<?= e(application_asset_url($planetArtwork[$planet['slug']]['path'])) ?>"
                                                 alt="<?= e($planetArtwork[$planet['slug']]['alt']) ?>"
                                                 width="76"

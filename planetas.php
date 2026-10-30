@@ -138,7 +138,7 @@ $planets = $q->fetchAll();
                     <article class="planet-card planet-card--<?= e($planet['slug']) ?> <?= $owned ? 'owned' : ($canAfford ? 'available' : 'locked') ?>">
                         <div class="planet-visual">
                             <?php if ($artwork): ?>
-                                <img src="<?= e($artwork['path']) ?>" alt="<?= e($artwork['alt']) ?>" width="240" height="240" loading="lazy" decoding="async">
+                                <img class="planet-art-image" src="<?= e($artwork['path']) ?>" alt="<?= e($artwork['alt']) ?>" width="240" height="240" loading="lazy" decoding="async">
                                 <span class="planet-image-credit"><?= e($artwork['credit']) ?></span>
                             <?php else: ?>
                                 <span class="planet-artwork-pending" role="img" aria-label="Ilustração de <?= e($planet['name']) ?> em preparação">Ilustração em preparação</span>
