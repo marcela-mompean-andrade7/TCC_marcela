@@ -202,10 +202,10 @@ $q->execute([$_SESSION['user_id']]);
 $ownedPlanets = $q->fetchAll();
 $planetArtwork = [
     'terra' => ['path' => 'assets/planets/terra.png', 'alt' => 'Terra vista do espaço'],
-    'marte' => ['path' => 'assets/planets/marte.jpg', 'alt' => 'Marte visto do espaço'],
+    'marte' => ['path' => 'assets/planets/marte-collection.png', 'alt' => 'Marte visto do espaço'],
     'jupiter' => ['path' => 'assets/planets/jupiter.jpg', 'alt' => 'Júpiter visto do espaço'],
     'saturno' => ['path' => 'assets/planets/saturno.jpg', 'alt' => 'Saturno visto do espaço'],
-    'netuno' => ['path' => 'assets/planets/netuno.jpg', 'alt' => 'Netuno visto do espaço'],
+    'netuno' => ['path' => 'assets/planets/netuno-collection.png', 'alt' => 'Netuno visto do espaço'],
     'urano' => ['path' => 'assets/planets/urano.jpg', 'alt' => 'Urano visto do espaço'],
     'sol' => ['path' => 'assets/planets/sol.jpg', 'alt' => 'Sol visto do espaço'],
 ];
