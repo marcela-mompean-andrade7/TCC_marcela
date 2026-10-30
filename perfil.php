@@ -471,7 +471,7 @@ if (($u['role'] ?? '') === 'aluno') {
                             <?php endforeach; ?>
                         </div>
                     <?php else: ?>
-                        <div class="card mission-history-empty"><?= e(t('Conclua uma missão espacial para registrar suas primeiras estrelas nesta coleção.')) ?> <br></div>
+                        <div class="card mission-history-empty"><?= e(t('Conclua uma missão espacial para registrar suas primeiras estrelas nesta coleção.')) ?></div>
                     <?php endif; ?>
                 </section>
             <?php endif; ?>
