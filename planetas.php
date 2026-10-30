@@ -12,10 +12,10 @@ $u = $q->fetch();
 
 $planetArtwork = [
     'terra' => ['path' => 'assets/planets/terra.jpg', 'alt' => 'Terra vista do espaço', 'credit' => 'NASA / Apollo 17'],
-    'marte' => ['path' => 'assets/planets/marte-collection-350.png', 'alt' => 'Superfície e relevo de Marte vistos do espaço', 'credit' => 'NASA / JPL / USGS'],
+    'marte' => ['path' => 'assets/planets/marte-planet.png', 'alt' => 'Superfície e relevo de Marte vistos do espaço', 'credit' => 'NASA / JPL / USGS'],
     'jupiter' => ['path' => 'assets/planets/jupiter.jpg', 'alt' => 'Júpiter com suas faixas atmosféricas e luas', 'credit' => 'NASA / JPL'],
     'saturno' => ['path' => 'assets/planets/saturno.jpg', 'alt' => 'Saturno e seus anéis vistos pela Voyager 2', 'credit' => 'NASA / JPL'],
-    'netuno' => ['path' => 'assets/planets/netuno-collection-transparent.png', 'alt' => 'Netuno e suas nuvens vistos pela Voyager 2', 'credit' => 'NASA / JPL'],
+    'netuno' => ['path' => 'assets/planets/netuno-planet.png', 'alt' => 'Netuno e suas nuvens vistos pela Voyager 2', 'credit' => 'NASA / JPL'],
     'urano' => ['path' => 'assets/planets/urano.jpg', 'alt' => 'Urano em cores naturais visto pela Voyager 2', 'credit' => 'NASA / JPL'],
     'sol' => ['path' => 'assets/planets/sol.jpg', 'alt' => 'Superfície e plasma solar observados pelo SDO', 'credit' => 'NASA / GSFC / SDO / AIA'],
 ];

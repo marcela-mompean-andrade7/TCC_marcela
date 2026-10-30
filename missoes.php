@@ -38,6 +38,32 @@ function redirect_to_mission(string $slug): never
     redirect('missoes.php?mission=' . rawurlencode($slug));
 }
 
+function mission_destination_visual(array $mission): string
+{
+    static $planetArtwork = [
+        'enigma-de-marte' => 'assets/planets/marte-planet.png',
+        'fortaleza-de-jupiter' => 'assets/planets/jupiter.jpg',
+        'portal-de-saturno' => 'assets/planets/saturno.jpg',
+    ];
+    static $destinationIcons = [
+        'despertar-da-lua' => '🌙',
+        'nebulosa-dos-enigmas' => '🌌',
+        'ultima-fronteira' => '✨',
+    ];
+
+    $slug = (string)($mission['slug'] ?? '');
+    if (isset($planetArtwork[$slug])) {
+        return '<img class="mission-destination-art" src="' . e(application_asset_url($planetArtwork[$slug])) . '" alt="" aria-hidden="true">';
+    }
+
+    $icon = $destinationIcons[$slug] ?? trim((string)($mission['destination_icon'] ?? ''));
+    if ($icon === '' || preg_match('/^\?+$/u', $icon) === 1 || $icon === '�') {
+        $icon = '🪐';
+    }
+
+    return e($icon);
+}
+
 $questionBank = [
     'despertar-da-lua' => [
         mission_choice('A bateria auxiliar tinha 18 unidades de energia e recebeu mais 7. Quanto há agora?', '25', ['23', '25', '26', '27'], 'Somamos as energias: 18 + 7 = 25.'),
@@ -341,7 +367,7 @@ foreach ($missions as $missionRow) {
                 <div class="page-header mission-page-heading">
                     <div>
                         <a class="mission-back-link" href="missoes.php">← Voltar às missões</a>
-                        <span class="tag"><?= e($selectedMission['destination_icon']) ?> <?= e($selectedMission['destination']) ?></span>
+                        <span class="tag"><?= mission_destination_visual($selectedMission) ?> <?= e($selectedMission['destination']) ?></span>
                         <h1><?= e($selectedMission['title']) ?></h1>
                         <p><?= e($selectedMission['story']) ?></p>
                     </div>
@@ -361,7 +387,7 @@ foreach ($missions as $missionRow) {
 
                 <?php if (!$attempt || ($attempt['completed_at'] !== null && ($_GET['practice'] ?? '') === '1')): ?>
                     <div class="mission-ready">
-                        <span class="mission-ready-icon" aria-hidden="true"><?= e($selectedMission['destination_icon']) ?></span>
+                        <span class="mission-ready-icon" aria-hidden="true"><?= mission_destination_visual($selectedMission) ?></span>
                         <div>
                             <h2><?= $reward ? 'Pratique novamente quando quiser' : 'Pronto para decolar?' ?></h2>
                             <p><?= $reward ? 'Você já recebeu a recompensa desta missão. Uma nova tentativa serve para praticar, sem estrelas adicionais.' : 'Responda corretamente a todas as questões para concluir a missão e receber 25 estrelas.' ?></p>
@@ -470,7 +496,7 @@ foreach ($missions as $missionRow) {
                     ?>
                         <article class="mission-card <?= $statusClass ?>">
                             <div class="mission-card-top">
-                                <span class="mission-planet" aria-hidden="true"><?= e($missionRow['destination_icon']) ?></span>
+                                <span class="mission-planet" aria-hidden="true"><?= mission_destination_visual($missionRow) ?></span>
                                 <span class="mission-status <?= $statusClass ?>"><?= e($statusLabel) ?></span>
                             </div>
                             <p class="mission-destination"><?= e($missionRow['destination']) ?> · <?= e($missionRow['difficulty']) ?></p>

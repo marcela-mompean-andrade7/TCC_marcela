@@ -3792,6 +3792,29 @@ html:not([data-theme="dark"]) .planet-visual::after {
     font-size: 1.9rem;
 }
 
+.mission-destination-art {
+    display: block;
+    object-fit: contain;
+    mix-blend-mode: screen;
+}
+
+.mission-planet .mission-destination-art {
+    width: 42px;
+    height: 42px;
+}
+
+.mission-ready-icon .mission-destination-art {
+    width: 60px;
+    height: 60px;
+}
+
+.tag .mission-destination-art {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+}
+
 .mission-status {
     padding: 5px 10px;
     border: 1px solid var(--border);
